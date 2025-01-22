@@ -1,5 +1,5 @@
-// backend/routes/matchmaking.js
 const express = require('express');
+const { v4: uuidv4 } = require('uuid'); // For generating unique room IDs
 const User = require('../models/User'); // Path to User model
 
 const router = express.Router();
@@ -16,8 +16,11 @@ router.get('/matchmaking', async (req, res) => {
       return res.status(404).json({ message: 'No users found with the same domain' });
     }
 
-    // Return the matched users
-    res.json(matchedUsers);
+    // Generate a unique room ID
+    const roomId = uuidv4();
+
+    // Return the matched users and room ID
+    res.json({ matchedUsers, roomId });
   } catch (err) {
     console.error('Error during matchmaking:', err);
     res.status(500).json({ message: 'Error during matchmaking' });
