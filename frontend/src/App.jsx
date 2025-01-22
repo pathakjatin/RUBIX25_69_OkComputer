@@ -14,22 +14,21 @@ import { AuthProvide } from "./context/AuthProvide";
 function App() {
 
   return (
-    <AuthProvide>
-  <BrowserRouter>
-
-    <main>
-    <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/user" element={<PrivateRoute><UserPage /></PrivateRoute>} />
-          <Route path="/host" element={<PrivateRoute><HostPage /></PrivateRoute>} />
-          <Route path="/mentor" element={<PrivateRoute><MentorPage /></PrivateRoute>} />
-          <Route path="/login" element={<LoginPage/>} />
-          <Route path="/signup" element={<SignUpPage/>} />
-          <Route path="/userprofile" element={<UserProfileDashboard/>} />
-          <Route path="/mentorprofile" element={<MentorProfileDashboard/>} />
-        </Routes>
-    </main>
-  </BrowserRouter>
+  <AuthProvide>
+    <BrowserRouter>
+      <main>
+      <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage/>} />
+            <Route path="/signup" element={<SignUpPage/>} />
+            <Route path="/user" element={<PrivateRoute><UserPage /></PrivateRoute>} />
+            <Route path="/host" element={<PrivateRoute><HostPage /></PrivateRoute>} />
+            <Route path="/mentor" element={<PrivateRoute><MentorPage /></PrivateRoute>} />
+            <Route path="/userprofile" element={<UserProfileDashboard/>} />
+            <Route path="/mentorprofile" element={<MentorProfileDashboard/>} />
+          </Routes>
+      </main>
+    </BrowserRouter>
   </AuthProvide>
   )
 }

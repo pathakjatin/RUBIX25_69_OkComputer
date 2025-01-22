@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth"; // Firebase Auth import for user data
-import { storage } from "../firebase"; // Assume firebase is initialized in a separate file
+import { storage } from "../firebase/firebase.config"; // Assume firebase is initialized in a separate file
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const MentorProfilePage = () => {
