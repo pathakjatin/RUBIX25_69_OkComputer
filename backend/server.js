@@ -3,15 +3,20 @@ const axios = require('axios');
 const querystring = require('querystring');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const cors = require('cors'); // Added for handling CORS
-const userDataRoutes = require('./src/participants/UserData.route'); // Import the user data routes
+const cors = require('cors'); // Importing CORS middleware
+const userDataRoutes = require('./src/participants/UserData.route'); // Import user data routes
+const http = require('http'); // Import the http module to work with Socket.IO
+const socketIo = require('socket.io'); // Import Socket.IO
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
-const app = express();
-const CLIENT_ID = 'YOUR_ZOOM_CLIENT_ID'; // Hardcoded Zoom Client ID
-const CLIENT_SECRET = 'YOUR_ZOOM_CLIENT_SECRET'; // Hardcoded Zoom Client Secret
-const REDIRECT_URI = 'http://localhost:5173/callback'; // Your frontend callback URL
+const app = express(); // Initialize the Express application
+
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI;
+const CLIENT_ID = process.env.ZOOM_CLIENT_ID;
+const CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET;
+const REDIRECT_URI = process.env.ZOOM_REDIRECT_URI;
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -24,12 +29,14 @@ app.get('/', (req, res) => {
 
 // MongoDB connection
 async function main() {
-  await mongoose.connect(process.env.DB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log("MongoDB connected");
+  } catch (err) {
+    console.error("Error connecting to MongoDB:", err);
+  }
 }
-main().then(() => console.log("MongoDB connected")).catch(err => console.log(err));
+main();
 
 // OAuth callback route for Zoom
 app.get('/callback', async (req, res) => {
@@ -63,8 +70,26 @@ app.get('/callback', async (req, res) => {
 // Use the user data routes
 app.use('/api', userDataRoutes); // Prefix all user data routes with '/api'
 
+// Create an HTTP server using the Express app
+const server = http.createServer(app);
+
+// Initialize Socket.IO with the HTTP server
+const io = socketIo(server);
+
+// Set up Socket.IO event listeners
+io.on('connection', (socket) => {
+  console.log("New user connected");
+
+  // Emit a welcome message to the newly connected user
+  socket.emit("message", "Welcome to the room!");
+
+  // Listen for disconnection
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
 // Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
 });

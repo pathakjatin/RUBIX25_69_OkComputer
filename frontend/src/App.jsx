@@ -11,7 +11,12 @@ import MentorProfile from "./pages/MentorProfile"
 import HostProfile from "./pages/HostProfile"
 import PrivateRoute from "./PrivateRoute";
 import { AuthProvide } from "./context/AuthProvide";
-import Room from "./pages/Room";
+import Room from './pages/Room';
+
+<Routes>
+    <Route path="/room" element={<Room />} />
+</Routes>
+
 
 function App() {
 
