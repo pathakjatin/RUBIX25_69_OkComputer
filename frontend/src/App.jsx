@@ -6,10 +6,12 @@ import HostPage from "./pages/HostPage";
 import MentorPage from "./pages/MentorPage";
 import LoginPage from "./components/HomePage/LoginPage";
 import SignUpPage from "./components/HomePage/SignUpPage"
-import UserProfileDashboard from "./pages/UserProfileDashboard";
-import MentorProfileDashboard from "./pages/MentorProfileDashboard"
+import UserProfile from "./pages/UserProfile";
+import MentorProfile from "./pages/MentorProfile"
+import HostProfile from "./pages/HostProfile"
 import PrivateRoute from "./PrivateRoute";
 import { AuthProvide } from "./context/AuthProvide";
+import Room from "./pages/Room";
 
 function App() {
 
@@ -24,8 +26,10 @@ function App() {
             <Route path="/user" element={<PrivateRoute><UserPage /></PrivateRoute>} />
             <Route path="/host" element={<PrivateRoute><HostPage /></PrivateRoute>} />
             <Route path="/mentor" element={<PrivateRoute><MentorPage /></PrivateRoute>} />
-            <Route path="/userprofile" element={<UserProfileDashboard/>} />
-            <Route path="/mentorprofile" element={<MentorProfileDashboard/>} />
+            <Route path="/userprofile" element={<UserProfile/>} />
+            <Route path="/mentorprofile" element={<MentorProfile/>} />
+            <Route path="/hostprofile" element={<HostProfile/>} />
+            <Route path = "/room" element = {<Room/>} />
           </Routes>
       </main>
     </BrowserRouter>
