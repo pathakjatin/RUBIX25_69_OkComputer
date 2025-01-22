@@ -3,24 +3,37 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   firebaseUid: {
     type: String,
-    required: true, // Unique Firebase UID
-    unique: true, // Ensure this is unique
+    required: true,
+    unique: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
   },
   domain: {
     type: String,
-    required: true, // Domain selected by user
+    required: true,
+  },
+  role: {
+    type: String,
+    enum: ['participant', 'host', 'mentor'],
+    required: true,
   },
   resume: {
-    type: String, // URL or file path for the resume
-    required: true,
+    type: String, // URL or path to the resume
   },
   createdAt: {
     type: Date,
-    default: Date.now, // Automatically set the creation time
+    default: Date.now,
   },
 });
 
-// Create model
-const UserData = mongoose.model("UserData", userSchema);
-
-module.exports = UserData;
+const User = mongoose.model("User", userSchema);
+module.exports = User;

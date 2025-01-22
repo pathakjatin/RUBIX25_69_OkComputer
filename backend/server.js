@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const cors = require('cors'); // For handling cross-origin requests
+const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const querystring = require('querystring');
@@ -14,10 +14,10 @@ const app = express();
 const server = http.createServer(app); // Create HTTP server
 const io = socketIo(server, {
   cors: {
-    origin: "*", // Allow requests from any origin (you can specify a specific domain if needed)
-    methods: ["GET", "POST"], // Allow GET and POST requests
+    origin: "*",
+    methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
-    credentials: true // Allow credentials if needed
+    credentials: true,
   }
 });
 
@@ -27,6 +27,10 @@ app.use(cors({
   origin: 'http://localhost:5173', // Change this to match your frontend URL (React's dev server)
   methods: ['GET', 'POST'],
 }));
+
+// Import user routes
+const userRoutes = require('./src/participants/UserData.route'); // Ensure the path is correct
+app.use('/api', userRoutes); // Register the user routes under the /api prefix
 
 // MongoDB connection
 const MONGO_URI = process.env.MONGO_URI;
