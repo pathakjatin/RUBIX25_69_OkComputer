@@ -1,33 +1,52 @@
-// frontend/src/App.jsx
 import React, { useState, useEffect } from 'react';
 import './index.css';
 
 function App() {
   const [users, setUsers] = useState([]);
-  const [domain, setDomain] = useState('Data Science');  // Default domain
+  const [domains, setDomains] = useState(['Data Science', 'AI/ML', 'Cyber Security', 'Full Stack Web Development', 'Cloud Engineering']);
+  const [domain, setDomain] = useState('Data Science');
+  const [hackathons, setHackathons] = useState([]);
+  const [enrolledHackathons, setEnrolledHackathons] = useState([]);
+  const [userId, setUserId] = useState(null); // Assuming you have a way to get the user ID
 
   useEffect(() => {
-    // Fetch users with the selected domain
+    // Fetch users by domain
     fetch(`http://localhost:3000/api/matchmaking?domain=${domain}`)
       .then((response) => response.json())
       .then((data) => setUsers(data))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, [domain]); // Runs every time the domain changes
+      .catch((error) => console.error('Error fetching users:', error));
+
+    // Fetch available hackathons
+    fetch('http://localhost:3000/api/hackathons')
+      .then((response) => response.json())
+      .then((data) => setHackathons(data))
+      .catch((error) => console.error('Error fetching hackathons:', error));
+
+    // Fetch hackathons the user is enrolled in
+    if (userId) {
+      fetch(`http://localhost:3000/api/enrolled-hackathons?userId=${userId}`)
+        .then((response) => response.json())
+        .then((data) => setEnrolledHackathons(data))
+        .catch((error) => console.error('Error fetching enrolled hackathons:', error));
+    }
+  }, [domain, userId]);
 
   return (
     <div className="App">
-      <h1>Matchmaking</h1>
+      <h1>User Dashboard</h1>
+
+      {/* Domain selection for matchmaking */}
       <h2>Selected Domain: {domain}</h2>
-      
-      {/* Dropdown to select domain */}
       <select onChange={(e) => setDomain(e.target.value)} value={domain}>
-        <option value="Data Science">Data Science</option>
-        <option value="AI/ML">AI/ML</option>
-        <option value="Cyber Security">Cyber Security</option>
-        <option value="Full Stack Web Development">Full Stack Web Development</option>
-        <option value="Cloud Engineering">Cloud Engineering</option>
+        {domains.map((d) => (
+          <option key={d} value={d}>
+            {d}
+          </option>
+        ))}
       </select>
 
+      {/* List of users */}
+      <h3>Users in {domain}:</h3>
       <ul>
         {users.length > 0 ? (
           users.map((user) => (
@@ -36,9 +55,37 @@ function App() {
             </li>
           ))
         ) : (
-          <p>No users found in this domain</p>
+          <p>No users found in this domain.</p>
         )}
       </ul>
+
+      {/* List of hackathons */}
+      <h3>Available Hackathons:</h3>
+      {hackathons.length > 0 ? (
+        <ul>
+          {hackathons.map((hackathon) => (
+            <li key={hackathon._id}>
+              {hackathon.name} - {hackathon.description}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No hackathons available at the moment.</p>
+      )}
+
+      {/* List of enrolled hackathons */}
+      <h3>Your Enrolled Hackathons:</h3>
+      {enrolledHackathons.length > 0 ? (
+        <ul>
+          {enrolledHackathons.map((hackathon) => (
+            <li key={hackathon._id}>
+              {hackathon.name} - {hackathon.description}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>You are not enrolled in any hackathons.</p>
+      )}
     </div>
   );
 }
