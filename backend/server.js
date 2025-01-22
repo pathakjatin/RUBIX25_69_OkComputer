@@ -26,8 +26,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Zoom OAuth credentials (replace with your credentials)
-const CLIENT_ID = 'YOUR_ZOOM_CLIENT_ID';
-const CLIENT_SECRET = 'YOUR_ZOOM_CLIENT_SECRET';
+const CLIENT_ID = 'bzeMJeo5QOK1l_OJBFactg';
+const CLIENT_SECRET = '530tgWjeMzeIRTLiytPGH4wXVc7RLKKc';
 const REDIRECT_URI = 'http://localhost:5173/callback';
 
 // Test route to verify if the server is running
@@ -132,15 +132,32 @@ app.get('/callback', async (req, res) => {
       },
     });
 
-    const accessToken = response.data.access_token;
-    console.log('Access Token:', accessToken);
+    const { access_token, refresh_token, expires_in } = response.data;
 
-    res.send('Successfully authenticated with Zoom!');
+    // Assume the user's email is passed in the query for simplicity
+    const userEmail = req.query.email;
+
+    // Find the user and update their Zoom token information
+    const user = await User.findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    user.zoomAccessToken = access_token;
+    user.zoomRefreshToken = refresh_token;
+    user.zoomTokenExpiry = new Date(Date.now() + expires_in * 1000); // Calculate token expiry time
+    await user.save();
+
+    console.log('Zoom tokens saved for user:', userEmail);
+
+    res.send('Successfully authenticated with Zoom and tokens saved!');
   } catch (error) {
     console.error('Error exchanging authorization code:', error.response ? error.response.data : error.message);
     res.status(500).send('Error during OAuth token exchange');
   }
 });
+
 
 // WebSocket for real-time communication
 io.on('connection', (socket) => {

@@ -1,12 +1,13 @@
-// backend/models/User.js
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  domain: { type: String, required: true },  // Domain for filtering matchmaking
+  name: String,
+  email: String,
+  domain: String,
+  enrolledHackathons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Hackathon' }],
+  zoomAccessToken: String,
+  zoomRefreshToken: String,
+  zoomTokenExpiry: Date,
 });
 
-const User = mongoose.model('User', userSchema);
-
-module.exports = User;
+module.exports = mongoose.model('User', userSchema);
