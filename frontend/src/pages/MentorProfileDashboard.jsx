@@ -1,160 +1,211 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getAuth } from "firebase/auth"; // Firebase Auth import for user data
+import { storage } from "../firebase"; // Assume firebase is initialized in a separate file
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const MentorProfilePage = () => {
-  const [bio, setBio] = useState("This is your bio.");
-  const [isBioEditing, setIsBioEditing] = useState(false);
-  const [mentorshipHistory] = useState([
-    { teamName: "Team A", rank: "1st", won: true },
-    { teamName: "Team B", rank: "2nd", won: false },
-  ]);
-  const [profilePic, setProfilePic] = useState(null);
-  const [formData] = useState({
-    name: "Jane Smith",
-    email: "janesmith@example.com",
-    phone: "+9876543210",
-    domain: "AI-ML",
-    linkedin: "https://linkedin.com/in/janesmith",
-    qualifications: "PhD in AI",
-    collaborators: ["John", "Sarah"],
-  });
+  const auth = getAuth();
+  const user = auth.currentUser; // Get current user from Google sign-in
 
-  const handleBioChange = (e) => setBio(e.target.value);
-  const handleBioEdit = () => setIsBioEditing(true);
-  const handleBioSave = () => setIsBioEditing(false);
+  // State to store the editable fields
+  const [domain, setDomain] = useState("AI-ML");
+  const [resume, setResume] = useState(null);
+  const [resumeURL, setResumeURL] = useState("");
+  const [qualification, setQualification] = useState(null);
+  const [qualificationURL, setQualificationURL] = useState("");
+  const [github, setGithub] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [bio, setBio] = useState("");
+  
+  // To fetch and store the profile picture
+  const [profilePic, setProfilePic] = useState(user ? user.photoURL : "");
 
-  const handleProfilePicChange = (e) => {
+  useEffect(() => {
+    if (user) {
+      setProfilePic(user.photoURL);
+    }
+  }, [user]);
+
+  // Handle file upload to Firebase storage for resume
+  const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
+    setResume(file);
+
     if (file) {
-      setProfilePic(URL.createObjectURL(file));
+      const storageRef = ref(storage, `mentorResumes/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setResumeURL(downloadURL);
     }
   };
 
-  const handleResumeClick = () => {
-    // Functionality to open or download the resume
-    window.open("/path/to/resume.pdf", "_blank");
+  // Handle file upload for qualification
+  const handleQualificationUpload = async (e) => {
+    const file = e.target.files[0];
+    setQualification(file);
+
+    if (file) {
+      const storageRef = ref(storage, `mentorQualifications/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setQualificationURL(downloadURL);
+    }
+  };
+
+  const handleInputChange = (e, setter) => {
+    setter(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Save data logic here (could be sent to Firebase Firestore or Realtime DB)
+    console.log("Mentor Profile Updated: ", {
+      domain,
+      resumeURL,
+      qualificationURL,
+      github,
+      linkedin,
+      bio,
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6 max-w-4xl mx-auto">
-        {/* Profile Picture Section */}
-        <div className="flex justify-center mb-6">
-          <div className="relative">
-            <img
-              src={profilePic || "/path/to/default-profile-pic.png"}
-              alt="Profile"
-              className="w-32 h-32 rounded-full border-4 border-gray-300"
-            />
-            <label className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleProfilePicChange}
-                className="opacity-0 w-0 h-0"
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+      <h1 className="text-3xl font-bold mb-6">Mentor Profile</h1>
+
+      <div className="bg-white p-8 rounded shadow-md w-96">
+        <form onSubmit={handleSubmit}>
+          {/* Display Google profile picture */}
+          {profilePic && (
+            <div className="flex justify-center mb-4">
+              <img
+                src={profilePic}
+                alt="Profile"
+                className="rounded-full w-32 h-32"
               />
-              📸
-            </label>
-          </div>
-        </div>
-
-        {/* Profile Information */}
-        <h2 className="text-3xl font-semibold text-center mb-6">Mentor Profile</h2>
-        <div className="mb-4 text-xl">
-          <strong>Name: </strong>{formData.name}
-          <span className="ml-2 text-blue-500 font-bold">✔️ Verified Mentor</span>
-        </div>
-        <div className="mb-4 text-xl">
-          <strong>Email: </strong>{formData.email}
-        </div>
-        <div className="mb-4 text-xl">
-          <strong>Phone: </strong>{formData.phone}
-        </div>
-        <div className="mb-4 text-xl">
-          <strong>Domain: </strong>{formData.domain}
-        </div>
-        <div className="mb-4 text-xl">
-          <strong>Qualifications: </strong>{formData.qualifications}
-        </div>
-
-        {/* Resume Section */}
-        <div className="mb-6">
-          <button
-            onClick={handleResumeClick}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600"
-          >
-            View Resume
-          </button>
-        </div>
-
-        {/* Bio Section */}
-        <div className="mb-6">
-          <h3 className="text-2xl font-semibold mb-4">Bio</h3>
-          {isBioEditing ? (
-            <>
-              <textarea
-                value={bio}
-                onChange={handleBioChange}
-                rows="4"
-                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
-              />
-              <button
-                onClick={handleBioSave}
-                className="bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600"
-              >
-                Save Bio
-              </button>
-            </>
-          ) : (
-            <>
-              <p className="text-lg mb-4">{bio}</p>
-              <button
-                onClick={handleBioEdit}
-                className="bg-yellow-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-yellow-600"
-              >
-                Edit Bio
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* Mentorship History Section */}
-        <div className="mb-6">
-          <h3 className="text-2xl font-semibold mb-4">Mentorship History</h3>
-          {mentorshipHistory.map((mentorship, index) => (
-            <div key={index} className="mb-4">
-              <strong className="text-xl">{mentorship.teamName}</strong>
-              <div>
-                <span className="text-md">Rank: {mentorship.rank}</span>
-                <span className="ml-4 text-md">{mentorship.won ? "Won" : "Did Not Win"}</span>
-              </div>
             </div>
-          ))}
-        </div>
-
-        {/* Social Links Section */}
-        <div className="mb-6">
-          <h3 className="text-2xl font-semibold mb-4">Social Links</h3>
-          <div className="mb-4 text-lg">
-            <strong>LinkedIn: </strong>
-            <a href={formData.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600">
-              {formData.linkedin}
-            </a>
-          </div>
-        </div>
-
-        {/* Collaborators Section */}
-        <div>
-          <h3 className="text-2xl font-semibold mb-4">Past Collaborators</h3>
-          {formData.collaborators.length > 0 ? (
-            <ul className="list-disc pl-5">
-              {formData.collaborators.map((collaborator, index) => (
-                <li key={index} className="text-lg">{collaborator}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-lg">No past collaborators yet.</p>
           )}
-        </div>
+
+          {/* Display name and Gmail from Google sign-in */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Name
+            </label>
+            <input
+              type="text"
+              value={user ? user.displayName : ""}
+              disabled
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              value={user ? user.email : ""}
+              disabled
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+
+          {/* Editable fields for Domain, GitHub, LinkedIn, Resume, Bio */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Domain
+            </label>
+            <select
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={domain}
+              onChange={(e) => handleInputChange(e, setDomain)}
+            >
+              <option>Data Science</option>
+              <option>Full Stack Web Dev</option>
+              <option>Cyber Security</option>
+              <option>AI-ML</option>
+              <option>AR-VR</option>
+              <option>Cloud Engineering</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              GitHub Profile
+            </label>
+            <input
+              type="url"
+              placeholder="Enter GitHub URL"
+              value={github}
+              onChange={(e) => handleInputChange(e, setGithub)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              LinkedIn Profile
+            </label>
+            <input
+              type="url"
+              placeholder="Enter LinkedIn URL"
+              value={linkedin}
+              onChange={(e) => handleInputChange(e, setLinkedin)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Upload Resume
+            </label>
+            <input
+              type="file"
+              onChange={handleResumeUpload}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            {resumeURL && (
+              <p className="text-green-500 text-sm mt-2">Resume uploaded!</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Upload Qualification (PhD/Experience)
+            </label>
+            <input
+              type="file"
+              onChange={handleQualificationUpload}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            {qualificationURL && (
+              <p className="text-green-500 text-sm mt-2">Qualification uploaded!</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Bio
+            </label>
+            <textarea
+              placeholder="Write a brief bio"
+              value={bio}
+              onChange={(e) => handleInputChange(e, setBio)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              rows="4"
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Save Profile
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
