@@ -1,40 +1,76 @@
 const express = require('express');
-const axios = require('axios');
-const querystring = require('querystring');
+const http = require('http');
+const socketIo = require('socket.io');
+const cors = require('cors'); // For handling cross-origin requests
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const cors = require('cors'); // Added for handling CORS
-const userDataRoutes = require('./src/participants/UserData.route'); // Import the user data routes
+const querystring = require('querystring');
+const axios = require('axios');
 
-dotenv.config(); // Load environment variables
+// Load environment variables
+dotenv.config();
 
 const app = express();
-const CLIENT_ID = 'YOUR_ZOOM_CLIENT_ID'; // Hardcoded Zoom Client ID
-const CLIENT_SECRET = 'YOUR_ZOOM_CLIENT_SECRET'; // Hardcoded Zoom Client Secret
-const REDIRECT_URI = 'http://localhost:5173/callback'; // Your frontend callback URL
+const server = http.createServer(app); // Create HTTP server
+const io = socketIo(server, {
+  cors: {
+    origin: "*", // Allow requests from any origin (you can specify a specific domain if needed)
+    methods: ["GET", "POST"], // Allow GET and POST requests
+    allowedHeaders: ["Content-Type"],
+    credentials: true // Allow credentials if needed
+  }
+});
 
-// Middleware to parse JSON
+// Middleware to parse JSON requests
 app.use(express.json());
-app.use(cors()); // Allow cross-origin requests
+app.use(cors({
+  origin: 'http://localhost:5173', // Change this to match your frontend URL (React's dev server)
+  methods: ['GET', 'POST'],
+}));
+
+// MongoDB connection
+const MONGO_URI = process.env.MONGO_URI;
+async function main() {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log('MongoDB connected');
+  } catch (err) {
+    console.error('Error connecting to MongoDB:', err);
+  }
+}
+main();
 
 // Basic route
 app.get('/', (req, res) => {
-  res.send("Hello");
+  res.send('Hello, World!');
 });
 
-// MongoDB connection
-async function main() {
-  await mongoose.connect(process.env.DB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-}
-main().then(() => console.log("MongoDB connected")).catch(err => console.log(err));
+// Socket.IO connection handler
+io.on('connection', (socket) => {
+  console.log('New user connected');
+  
+  // Send a welcome message to the client who just connected
+  socket.emit('message', 'Welcome to the room!');
 
-// OAuth callback route for Zoom
+  // Broadcast the received message to all other clients
+  socket.on('chat_message', (msg) => {
+    console.log('Message received:', msg);
+    io.emit('message', msg);  // Broadcast the message to all connected clients
+  });
+
+  // Handle client disconnection
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
+// OAuth callback route for Zoom (if needed for OAuth integration)
+const CLIENT_ID = process.env.ZOOM_CLIENT_ID;
+const CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET;
+const REDIRECT_URI = process.env.ZOOM_REDIRECT_URI;
+
 app.get('/callback', async (req, res) => {
   const { code } = req.query;
-
   const data = querystring.stringify({
     code: code,
     grant_type: 'authorization_code',
@@ -42,7 +78,7 @@ app.get('/callback', async (req, res) => {
   });
 
   const authHeader = `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`;
-
+  
   try {
     const response = await axios.post('https://zoom.us/oauth/token', data, {
       headers: {
@@ -50,8 +86,8 @@ app.get('/callback', async (req, res) => {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
-
-    const accessToken = response.data.access_token; 
+    
+    const accessToken = response.data.access_token;
     console.log('Access Token:', accessToken);
     res.send('Successfully authenticated with Zoom!');
   } catch (error) {
@@ -60,11 +96,7 @@ app.get('/callback', async (req, res) => {
   }
 });
 
-// Use the user data routes
-app.use('/api', userDataRoutes); // Prefix all user data routes with '/api'
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
+// Start the server on port 3000
+server.listen(3000, () => {
+  console.log('Backend server running on http://localhost:3000');
 });
