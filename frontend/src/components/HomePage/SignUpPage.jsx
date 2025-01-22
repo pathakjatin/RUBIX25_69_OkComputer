@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore";
-import { auth, db, googleProvider } from "../../firebase/firebase.config";
+import axios from "axios"; // Import axios
+import { auth, googleProvider } from "../../firebase/firebase.config"; // Make sure your firebase config is set up correctly
 
 const SignUpPage = () => {
   const [signUpType, setSignUpType] = useState("user");
@@ -30,30 +30,14 @@ const SignUpPage = () => {
       const userData = {
         name: user.displayName || formData.name,
         email: user.email,
-        uid: user.uid,
+        firebaseUid: user.uid,
+        role: signUpType, // Send role (participant, host, mentor)
       };
 
-      if (signUpType === "host") {
-        await addDoc(collection(db, "hosts"), {
-          organizationName: formData.organizationName,
-          ...userData,
-        });
-      } else if (signUpType === "mentor") {
-        await addDoc(collection(db, "mentors"), {
-          ...userData,
-        });
-      } else {
-        await addDoc(collection(db, "users"), {
-          name: formData.name,
-          phone: formData.phone,
-          domain: formData.domain,
-          ...userData,
-          role: signUpType,
-        });
-      }
-
+      // Send Google user data to the backend
+      await axios.post("http://localhost:3000/api/user", userData);
       alert(`Sign-up successful! Welcome, ${user.displayName || formData.name}`);
-      window.location.href = "/dashboard"; // Adjust to the desired route after sign-up
+      window.location.href = "/dashboard"; // Redirect after sign-up
     } catch (err) {
       console.error("Google Sign-Up Error:", err.message);
       setError("Google sign-up failed. Please try again.");
@@ -65,30 +49,18 @@ const SignUpPage = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const user = userCredential.user;
+
       const userData = {
         email: formData.email,
-        uid: user.uid,
+        firebaseUid: user.uid,
+        name: formData.name,
+        phone: formData.phone,
+        domain: formData.domain,
+        role: signUpType, // Send role (participant, host, mentor)
       };
 
-      if (signUpType === "host") {
-        await addDoc(collection(db, "hosts"), {
-          organizationName: formData.organizationName,
-          ...userData,
-        });
-      } else if (signUpType === "mentor") {
-        await addDoc(collection(db, "mentors"), {
-          ...userData,
-        });
-      } else {
-        await addDoc(collection(db, "users"), {
-          name: formData.name,
-          phone: formData.phone,
-          domain: formData.domain,
-          ...userData,
-          role: signUpType,
-        });
-      }
-
+      // Send data to the backend (manual sign-up)
+      await axios.post("http://localhost:3000/api/user", userData);
       window.location.href = "/dashboard"; // Redirect after sign-up
     } catch (err) {
       console.error("Manual Sign-Up Error:", err.message);
