@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "../firebase"; // Make sure your Firebase is configured
+import { db } from "../firebase/firebase.config"; // Make sure your Firebase is configured
 
 const HostProfilePage = () => {
   const auth = getAuth();
