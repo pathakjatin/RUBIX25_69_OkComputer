@@ -1,32 +1,44 @@
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000');  // Connect to your backend server
+const Chat = ({ roomId }) => {
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const socket = io('http://localhost:3000'); // Assuming the server is running locally
 
-const Chat = () => {
   useEffect(() => {
-    // Emit an event to join a specific room
-    socket.emit('joinRoom', 'room123');  // You can dynamically assign room names
+    socket.emit('joinRoom', roomId);
 
-    // Listen for incoming messages
-    socket.on('message', (message) => {
-      console.log('Received message:', message);
+    socket.on('chatMessage', (msg) => {
+      setMessages((prevMessages) => [...prevMessages, msg]);
     });
 
-    // Clean up the socket connection when the component is unmounted
     return () => {
-      socket.disconnect();
+      socket.off('chatMessage');
     };
-  }, []);
+  }, [roomId]);
 
-  const sendMessage = (message) => {
-    socket.emit('chatMessage', { room: 'room123', message });  // Sending a message to the room
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      socket.emit('chatMessage', { roomId, message });
+      setMessage('');
+    }
   };
 
   return (
     <div>
-      <h1>Chat Room</h1>
-      <button onClick={() => sendMessage('Hello, everyone!')}>Send Message</button>
+      <div>
+        {messages.map((msg, index) => (
+          <p key={index}>{msg.message}</p>
+        ))}
+      </div>
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Type your message"
+      />
+      <button onClick={handleSendMessage}>Send</button>
     </div>
   );
 };
