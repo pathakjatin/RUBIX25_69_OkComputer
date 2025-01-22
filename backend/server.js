@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const querystring = require('querystring');
-<<<<<<< Updated upstream
+
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors'); // Importing CORS middleware
@@ -12,7 +12,7 @@ const http = require('http'); // Import the http module to work with Socket.IO
 const socketIo = require('socket.io'); // Import Socket.IO
 
 dotenv.config();
-=======
+
 
 const app = express();
 
