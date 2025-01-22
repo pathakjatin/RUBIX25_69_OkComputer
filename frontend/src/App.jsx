@@ -11,6 +11,7 @@ import MentorProfile from "./pages/MentorProfile"
 import HostProfile from "./pages/HostProfile"
 import PrivateRoute from "./PrivateRoute";
 import { AuthProvide } from "./context/AuthProvide";
+import Room from "./pages/Room";
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
             <Route path="/userprofile" element={<UserProfile/>} />
             <Route path="/mentorprofile" element={<MentorProfile/>} />
             <Route path="/hostprofile" element={<HostProfile/>} />
+            <Route path = "/room" element = {<Room/>} />
           </Routes>
       </main>
     </BrowserRouter>
