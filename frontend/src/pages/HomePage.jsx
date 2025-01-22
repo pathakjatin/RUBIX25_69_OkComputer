@@ -1,5 +1,5 @@
-import Hero from "../components/HomePage/Hero";
-import Header from "../components/HomePage/Header";
+import Hero from "../components/HomePage/Hero.jsx";
+import Header from "../components/HomePage/Header.jsx";
 
 export default function HomePage(){
     return(
