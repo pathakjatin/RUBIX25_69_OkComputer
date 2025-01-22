@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 const Room = () => {
-  const [messages, setMessages] = useState([]); // Store messages in state
-  const [message, setMessage] = useState(''); // Store current message input
-  const [user, setUser] = useState(''); // Store username
-  const [socket, setSocket] = useState(null); // WebSocket connection
-  const [room, setRoom] = useState('general'); // Room name
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const [user, setUser] = useState('');
+  const [room, setRoom] = useState('general');
+  const [zoomMeetingUrl, setZoomMeetingUrl] = useState(null); // Store Zoom meeting URL
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // Create WebSocket connection when component mounts
     const newSocket = io('http://localhost:3000');
     setSocket(newSocket);
 
@@ -18,16 +18,35 @@ const Room = () => {
       setMessages((prevMessages) => [...prevMessages, msg]);
     });
 
-    // Cleanup on component unmount
+    // Join the room when socket is connected
+    newSocket.emit('join_room', room);
+
     return () => newSocket.close();
-  }, []);
+  }, [room]);
 
   const handleSendMessage = () => {
     if (message.trim() && user.trim()) {
-      socket.emit('chat_message', { room, message, sender: user }); // Emit message to server
-      setMessage(''); // Clear input field after sending
+      socket.emit('chat_message', { room, message, sender: user });
+      setMessage('');
     } else {
       alert('Please enter both a username and a message.');
+    }
+  };
+
+  const handleCreateZoomMeeting = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/create-zoom-meeting', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user }),
+      });
+
+      const data = await response.json();
+      setZoomMeetingUrl(data.join_url); // Set Zoom meeting URL
+    } catch (error) {
+      console.error('Error creating Zoom meeting:', error);
     }
   };
 
@@ -80,6 +99,28 @@ const Room = () => {
           >
             Send
           </button>
+        </div>
+
+        {/* Zoom Meeting Button */}
+        <div className="mt-4">
+          <button
+            onClick={handleCreateZoomMeeting}
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+          >
+            Create Zoom Meeting
+          </button>
+          {zoomMeetingUrl && (
+            <div className="mt-4">
+              <a
+                href={zoomMeetingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                Join Zoom Meeting
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>
