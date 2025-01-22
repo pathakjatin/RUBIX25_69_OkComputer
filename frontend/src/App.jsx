@@ -12,6 +12,7 @@ import HostProfile from "./pages/HostProfile";
 import PrivateRoute from "./PrivateRoute"; // Handles protected routes
 import { AuthProvide } from "./context/AuthProvide"; // Provides authentication context
 import Matchmaking from "./pages/Matchmaking"; // Matchmaking component
+import Room from "./pages/Room"; // Room component
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/mentorprofile" element={<PrivateRoute><MentorProfile /></PrivateRoute>} />
             <Route path="/hostprofile" element={<PrivateRoute><HostProfile /></PrivateRoute>} />
             <Route path="/matchmaking" element={<PrivateRoute><Matchmaking /></PrivateRoute>} />
+            <Route path="/room" element={<PrivateRoute><Room /></PrivateRoute>} />
           </Routes>
         </main>
       </BrowserRouter>
