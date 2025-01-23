@@ -38,7 +38,7 @@ const JoinHackathonPage = () => {
 
   return (
     <div className="join-hackathon-page p-8 bg-gray-100">
-      <h1 className="text-4xl font-bold text-center mb-10">Join Hackathon {hackathonId}</h1>
+      <h1 className="text-4xl font-bold text-center mb-10">Join Future Hack {hackathonId}</h1>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="mb-4">

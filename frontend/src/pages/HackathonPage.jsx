@@ -6,7 +6,7 @@ const HackathonPage = () => {
   const [onlineList, setOnlineList] = useState([
     { id: 1, name: 'Virtual Code Sprint', description: 'An online hackathon focused on AI and ML.', startDate: 'Jan 25', endDate: 'Jan 28' },
     { id: 2, name: 'Tech Innovators', description: 'A hackathon for tech enthusiasts to build innovative products.', startDate: 'Feb 2', endDate: 'Feb 5' },
-    { id: 3, name: 'Future Hack', description: 'A futuristic hackathon focusing on blockchain and crypto.', startDate: 'Mar 1', endDate: 'Mar 3' }
+    { id: 3, name: 'Future Hack', description: 'A futuristic hackathon focusing on blockchain and crypto.', startDate: 'Jan 24', endDate: 'Feb 2' }
   ]);
   
   const [offlineList, setOfflineList] = useState([

@@ -74,7 +74,7 @@ const Leaderboard = () => {
 
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-gray-900">Hackathon Leaderboard</h1>
+          <h1 className="text-4xl font-extrabold text-gray-900">Future Hack Leaderboard</h1>
           <p className="text-lg text-gray-600">Start Date: {new Date().toLocaleDateString()}</p>
           <p className="text-lg text-gray-600">End Date: {endDate.toLocaleDateString()}</p>
         </div>
