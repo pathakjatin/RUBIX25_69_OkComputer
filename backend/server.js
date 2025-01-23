@@ -7,8 +7,20 @@ const dotenv = require('dotenv');
 
 dotenv.config(); // Load environment variables
 
-// Initialize Express app and server
+// Initialize Express app first
 const app = express();
+
+// Enable CORS for specific origins (you can adjust this for production)
+const corsOptions = {
+  origin: 'http://localhost:5173', // Replace with the frontend URL/port if different
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+};
+
+// Use CORS middleware
+app.use(cors(corsOptions));
+
+// Create HTTP server and initialize Socket.IO
 const server = http.createServer(app); // Create HTTP server
 const io = socketIo(server, {
   cors: {
@@ -21,10 +33,6 @@ const io = socketIo(server, {
 
 // Middleware to parse JSON requests
 app.use(express.json());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173', // Make this configurable for production
-  methods: ['GET', 'POST'],
-}));
 
 // Import user routes
 const userRoutes = require('./src/participants/UserData.route');
@@ -32,7 +40,7 @@ app.use('/api', userRoutes); // Register the user routes under the /api prefix
 
 // MongoDB connection
 const MONGO_URI = process.env.MONGO_URI;
-mongoose.connect(MONGO_URI)
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('Error connecting to MongoDB:', err));
 

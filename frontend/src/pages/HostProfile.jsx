@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "../firebase/firebase.config"; // Make sure your Firebase is configured
+import { db } from "../firebase/firebase.config"; // Ensure Firebase is configured
 
 const HostProfilePage = () => {
   const auth = getAuth();
@@ -29,7 +29,6 @@ const HostProfilePage = () => {
         if (hostDoc.exists()) {
           setProfileData(hostDoc.data());
         } else {
-          // If no data exists, initialize with organization name and Gmail
           setProfileData({
             ...profileData,
             organizationName: user.displayName || "",
@@ -61,109 +60,111 @@ const HostProfilePage = () => {
     });
   };
 
-  const handleEdit = () => {
-    setEditing(true);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-        <h1 className="text-2xl font-bold mb-4">Host Profile</h1>
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl">
+        <h1 className="text-3xl font-bold mb-6 text-indigo-800 text-center">Host Profile</h1>
         <div className="flex flex-col items-center">
           <img
             src={profileData.profilePicture || "/default-profile.png"}
             alt="Profile"
-            className="rounded-full w-24 h-24 mb-4"
+            className="rounded-full w-32 h-32 mb-6 border-4 border-indigo-200 shadow-md"
           />
-          <h2 className="text-xl font-semibold mb-2">{profileData.organizationName}</h2>
-          <p className="text-gray-600 mb-2">{profileData.email}</p>
-          <p className="text-blue-500 italic">{profileData.uniqueTag}</p>
+          <h2 className="text-2xl font-semibold text-indigo-900 mb-2">{profileData.organizationName}</h2>
+          <p className="text-gray-700 mb-1">{profileData.email}</p>
+          <p className="text-indigo-600 italic mb-4">{profileData.uniqueTag || "No unique tag provided"}</p>
 
           {!editing ? (
             <>
-              <div className="mt-6 text-left w-full">
-                <h3 className="font-semibold mb-2">Socials:</h3>
-                <p>LinkedIn: {profileData.linkedin || "Not provided"}</p>
-                <p>Twitter: {profileData.twitter || "Not provided"}</p>
-                <p>Instagram: {profileData.instagram || "Not provided"}</p>
+              <div className="w-full text-left mb-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Social Links:</h3>
+                <p className="text-gray-700 mb-1">
+                  <span className="font-medium text-indigo-800">LinkedIn:</span> {profileData.linkedin || "Not provided"}
+                </p>
+                <p className="text-gray-700 mb-1">
+                  <span className="font-medium text-indigo-800">Twitter:</span> {profileData.twitter || "Not provided"}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium text-indigo-800">Instagram:</span> {profileData.instagram || "Not provided"}
+                </p>
 
-                <h3 className="font-semibold mt-4 mb-2">Contest History:</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mt-6 mb-3">Contest History:</h3>
                 {profileData.contestHistory.length > 0 ? (
-                  <ul>
+                  <ul className="list-disc list-inside text-gray-700">
                     {profileData.contestHistory.map((contest, index) => (
                       <li key={index}>{contest}</li>
                     ))}
                   </ul>
                 ) : (
-                  <p>No contests held yet.</p>
+                  <p className="text-gray-500">No contests held yet.</p>
                 )}
               </div>
               <button
-                onClick={handleEdit}
-                className="mt-6 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                onClick={() => setEditing(true)}
+                className="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition"
               >
                 Edit Profile
               </button>
             </>
           ) : (
             <>
-              <div className="mt-6 text-left w-full">
-                <label className="block mb-2">Unique Tag:</label>
+              <div className="w-full text-left mb-6">
+                <label className="block font-medium text-gray-800 mb-2">Unique Tag:</label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-4 leading-tight focus:outline-none"
                   type="text"
                   name="uniqueTag"
                   value={profileData.uniqueTag}
                   onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
 
-                <label className="block mb-2">LinkedIn:</label>
+                <label className="block font-medium text-gray-800 mb-2">LinkedIn:</label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-4 leading-tight focus:outline-none"
                   type="url"
                   name="linkedin"
                   value={profileData.linkedin}
                   onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
 
-                <label className="block mb-2">Twitter:</label>
+                <label className="block font-medium text-gray-800 mb-2">Twitter:</label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-4 leading-tight focus:outline-none"
                   type="url"
                   name="twitter"
                   value={profileData.twitter}
                   onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
 
-                <label className="block mb-2">Instagram:</label>
+                <label className="block font-medium text-gray-800 mb-2">Instagram:</label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-4 leading-tight focus:outline-none"
                   type="url"
                   name="instagram"
                   value={profileData.instagram}
                   onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
 
-                <label className="block mb-2">Contest History:</label>
+                <label className="block font-medium text-gray-800 mb-2">Contest History:</label>
                 <textarea
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-4 leading-tight focus:outline-none"
                   name="contestHistory"
                   value={profileData.contestHistory.join("\n")}
                   onChange={(e) =>
                     setProfileData({ ...profileData, contestHistory: e.target.value.split("\n") })
                   }
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
               </div>
-              <div className="flex justify-between items-center mt-6">
+              <div className="flex justify-between">
                 <button
                   onClick={handleSave}
-                  className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+                  className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 transition"
                 >
                   Save
                 </button>
                 <button
                   onClick={() => setEditing(false)}
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+                  className="bg-gray-500 text-white py-2 px-6 rounded-lg hover:bg-gray-600 transition"
                 >
                   Cancel
                 </button>
