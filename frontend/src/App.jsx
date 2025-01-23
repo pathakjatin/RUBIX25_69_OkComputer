@@ -16,6 +16,7 @@ import Room from "./pages/Room"; // Room component
 import VideoCall from "./pages/VideoCall"; // Room component
 import LobbyPage from "./pages/LobbyPage";
 import HackathonPage from "./pages/HackathonPage";
+import JoinHackathonPage from './pages/JoinHackathonPage';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/video" element={<VideoCall />} />
             <Route path="/lobby" element={<LobbyPage />} />
             <Route path="/hackdisplay" element={<HackathonPage />} />
+            <Route path="/join-hackathon/:hackathonId" element={<JoinHackathonPage />} />
           </Routes>
         </main>
       </BrowserRouter>

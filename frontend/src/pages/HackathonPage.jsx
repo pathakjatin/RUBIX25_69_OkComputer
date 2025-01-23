@@ -1,25 +1,23 @@
-import React, { useState, useEffect } from 'react';
-
-// Sample data for hackathons (replace with actual data fetching logic)
-const onlineHackathons = [
-  { id: 1, name: 'Virtual Code Sprint', description: 'An online hackathon focused on AI and ML.', startDate: 'Jan 25', endDate: 'Jan 28' },
-  { id: 2, name: 'Tech Innovators', description: 'A hackathon for tech enthusiasts to build innovative products.', startDate: 'Feb 2', endDate: 'Feb 5' },
-  { id: 3, name: 'Future Hack', description: 'A futuristic hackathon focusing on blockchain and crypto.', startDate: 'Mar 1', endDate: 'Mar 3' }
-];
-
-const offlineHackathons = [
-  { id: 1, name: 'Hack the Planet', location: 'New York', description: 'An in-person event focusing on sustainability and clean tech.', date: 'Feb 10-12' },
-  { id: 2, name: 'Code Fest', location: 'San Francisco', description: 'A hackathon with industry leaders, tech talks, and networking events.', date: 'Mar 5-7' }
-];
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const HackathonPage = () => {
-  const [onlineList, setOnlineList] = useState(onlineHackathons);
-  const [offlineList, setOfflineList] = useState(offlineHackathons);
+  const navigate = useNavigate(); // Hook to redirect
+  const [onlineList, setOnlineList] = useState([
+    { id: 1, name: 'Virtual Code Sprint', description: 'An online hackathon focused on AI and ML.', startDate: 'Jan 25', endDate: 'Jan 28' },
+    { id: 2, name: 'Tech Innovators', description: 'A hackathon for tech enthusiasts to build innovative products.', startDate: 'Feb 2', endDate: 'Feb 5' },
+    { id: 3, name: 'Future Hack', description: 'A futuristic hackathon focusing on blockchain and crypto.', startDate: 'Mar 1', endDate: 'Mar 3' }
+  ]);
+  
+  const [offlineList, setOfflineList] = useState([
+    { id: 1, name: 'Hack the Planet', location: 'New York', description: 'An in-person event focusing on sustainability and clean tech.', date: 'Feb 10-12' },
+    { id: 2, name: 'Code Fest', location: 'San Francisco', description: 'A hackathon with industry leaders, tech talks, and networking events.', date: 'Mar 5-7' }
+  ]);
 
-  // Join Hackathon function (can be used for actual logic later)
+  // Join Hackathon function (redirect to JoinHackathonPage)
   const handleJoin = (hackathonId) => {
-    alert(`Joining hackathon with ID: ${hackathonId}`);
-    // Here, you could trigger the actual join logic, like API call or route change
+    // Redirecting to the join hackathon page with hackathonId
+    navigate(`/join-hackathon/${hackathonId}`);
   };
 
   return (
