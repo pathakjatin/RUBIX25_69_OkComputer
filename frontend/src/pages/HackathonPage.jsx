@@ -10,7 +10,7 @@ const HackathonPage = () => {
   ]);
   
   const [offlineList, setOfflineList] = useState([
-    { id: 1, name: 'Hack the Planet', location: 'New York', description: 'An in-person event focusing on sustainability and clean tech.', date: 'Feb 10-12' },
+    { id: 1, name: 'Rubix 25 CSI-TSEC', location: 'Mumbai', description: 'A 48-hour online coding extravaganza set to redefine innovation.', date: 'Jan 22-26' },
     { id: 2, name: 'Code Fest', location: 'San Francisco', description: 'A hackathon with industry leaders, tech talks, and networking events.', date: 'Mar 5-7' }
   ]);
 
@@ -46,7 +46,7 @@ const HackathonPage = () => {
 
       {/* Offline Hackathons Section */}
       <div className="offline-hackathons">
-        <h2 className="text-2xl font-semibold mb-6">📢 Offline Hackathons</h2>
+        <h2 className="text-2xl font-semibold mb-6">📢 Other Hackathons</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {offlineList.map((hackathon) => (
             <div key={hackathon.id} className="offline-hackathon-card bg-white p-6 rounded-lg shadow-md">
@@ -54,9 +54,11 @@ const HackathonPage = () => {
               <p className="text-gray-600 mb-2">{hackathon.description}</p>
               <p className="text-gray-500 mb-1">📍 {hackathon.location}</p>
               <p className="text-gray-500 mb-4">🗓️ {hackathon.date}</p>
+              <a href='https://rubix25.devfolio.co/'>
               <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
                 Learn More
               </button>
+              </a>
             </div>
           ))}
         </div>
