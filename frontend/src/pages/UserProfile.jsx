@@ -1,56 +1,103 @@
 import React, { useState, useEffect } from "react";
-import { getAuth } from "firebase/auth"; // Firebase Auth import for user data
-import { storage } from "../firebase/firebase.config"; // Assume firebase is initialized in a separate file
+import axios from "axios";
+import { getAuth } from "firebase/auth";
+import { storage } from "../firebase/firebase.config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const UserProfilePage = () => {
   const auth = getAuth();
-  const user = auth.currentUser; // Get current user from Google sign-in
+  const user = auth.currentUser; // Get current user from Firebase Authentication
 
-  // State to store the editable fields
-  const [domain, setDomain] = useState("Data Science");
-  const [resume, setResume] = useState(null);
-  const [resumeURL, setResumeURL] = useState("");
+  const [domain, setDomain] = useState("");
+  const [resumeURL, setResumeURL] = useState(""); // Store resume URL
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [bio, setBio] = useState("");
-  
-  // To fetch and store the profile picture
   const [profilePic, setProfilePic] = useState(user ? user.photoURL : "");
+  const [name, setName] = useState(user ? user.email.split('@')[0] : ""); // Extract name from email
+  const [loading, setLoading] = useState(false);
 
+  // Fetch user data on component load
   useEffect(() => {
-    if (user) {
-      setProfilePic(user.photoURL);
-    }
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/api/user/${user.uid}`
+          );
+          const data = response.data;
+          setDomain(data.domain || ""); // Default to empty if no data
+          setGithub(data.github || "");
+          setLinkedin(data.linkedin || "");
+          setBio(data.bio || "");
+          setResumeURL(data.resume || ""); // Default to empty or current resume URL
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
   }, [user]);
 
   // Handle file upload to Firebase storage for resume
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
-    setResume(file);
 
-    if (file) {
+    if (
+      file &&
+      file.size <= 2 * 1024 * 1024 &&
+      file.type.includes("pdf") // Validate size and type
+    ) {
       const storageRef = ref(storage, `resumes/${user.uid}`);
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-      setResumeURL(downloadURL);
+      setLoading(true);
+      try {
+        await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+        console.log("Resume uploaded, URL:", downloadURL); // Log the URL after upload
+        setResumeURL(downloadURL); // Set the resume URL only when a file is uploaded
+        alert("Resume uploaded successfully!");
+      } catch (error) {
+        console.error("Error uploading resume:", error);
+        alert("Failed to upload resume.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert("Invalid file. Only PDFs under 2MB are allowed.");
     }
   };
 
-  const handleInputChange = (e, setter) => {
-    setter(e.target.value);
-  };
-
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save data logic here (could be sent to Firebase Firestore or Realtime DB)
-    console.log("Profile Updated: ", {
+
+    // Prepare data to update the profile
+    const updatedData = {
       domain,
-      resumeURL,
       github,
       linkedin,
       bio,
-    });
+      name, // Include the name
+    };
+
+    // Only include the resumeURL if it's not empty
+    if (resumeURL) {
+      updatedData.resume = resumeURL;
+    }
+
+    console.log("Updating profile with data:", updatedData); // Debug the data being sent
+
+    try {
+      await axios.put(
+        `http://localhost:3000/api/user/${user.uid}`,
+        updatedData
+      );
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert("Failed to update profile. Please try again.");
+    }
   };
 
   return (
@@ -59,7 +106,6 @@ const UserProfilePage = () => {
 
       <div className="bg-white p-8 rounded shadow-md w-96">
         <form onSubmit={handleSubmit}>
-          {/* Display Google profile picture */}
           {profilePic && (
             <div className="flex justify-center mb-4">
               <img
@@ -70,15 +116,15 @@ const UserProfilePage = () => {
             </div>
           )}
 
-          {/* Display name and Gmail from Google sign-in */}
+          {/* Editable Name */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Name
             </label>
             <input
               type="text"
-              value={user ? user.displayName : ""}
-              disabled
+              value={name}
+              onChange={(e) => setName(e.target.value)} // Handle name change
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
@@ -95,16 +141,16 @@ const UserProfilePage = () => {
             />
           </div>
 
-          {/* Editable fields for Domain, GitHub, LinkedIn, Resume, Bio */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Domain
             </label>
             <select
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               value={domain}
-              onChange={(e) => handleInputChange(e, setDomain)}
+              onChange={(e) => setDomain(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             >
+              <option value="">Select Domain</option>
               <option>Data Science</option>
               <option>Full Stack Web Dev</option>
               <option>Cyber Security</option>
@@ -122,7 +168,7 @@ const UserProfilePage = () => {
               type="url"
               placeholder="Enter GitHub URL"
               value={github}
-              onChange={(e) => handleInputChange(e, setGithub)}
+              onChange={(e) => setGithub(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
@@ -135,7 +181,7 @@ const UserProfilePage = () => {
               type="url"
               placeholder="Enter LinkedIn URL"
               value={linkedin}
-              onChange={(e) => handleInputChange(e, setLinkedin)}
+              onChange={(e) => setLinkedin(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
@@ -161,7 +207,7 @@ const UserProfilePage = () => {
             <textarea
               placeholder="Write a brief bio"
               value={bio}
-              onChange={(e) => handleInputChange(e, setBio)}
+              onChange={(e) => setBio(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               rows="4"
             />
@@ -170,9 +216,12 @@ const UserProfilePage = () => {
           <div className="flex items-center justify-between">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              disabled={loading}
+              className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Save Profile
+              {loading ? "Saving..." : "Save Profile"}
             </button>
           </div>
         </form>
