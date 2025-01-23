@@ -174,6 +174,6 @@ app.get('/create-meeting', async (req, res) => {
 });
 
 // Start the server on port 3000
-server.listen(3000, () => {
-  console.log('Backend server running on http://localhost:3000');
+server.listen(5000, () => {
+  console.log('Backend server running on http://localhost:5000');
 });

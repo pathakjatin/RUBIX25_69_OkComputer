@@ -1,82 +1,111 @@
 const express = require("express");
-const User = require("./UserData.model"); // Ensure this path is correct based on your structure
-const bcrypt = require("bcryptjs"); // Import bcrypt for hashing passwords
+const multer = require("multer");
+const User = require("../../models/UserData.model"); // Ensure the path matches your project structure
+const bcrypt = require("bcryptjs");
 const router = express.Router();
 
-// Middleware for validating inputs
-function validateUserInput(req, res, next) {
+// Multer setup for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Directory to save uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const upload = multer({ storage });
+
+// Middleware to validate user input
+const validateUserInput = (req, res, next) => {
   const { role, email, name, phoneNumber, domain, password, organizationName, qualifications, resume } = req.body;
 
-  // Check if the basic required fields are provided
   if (!role || !email || !name || !phoneNumber || !domain || !password) {
-    return res.status(400).json({ message: "role, email, name, phoneNumber, domain, and password are required." });
+    return res.status(400).json({ message: "Required fields: role, email, name, phoneNumber, domain, and password." });
   }
 
-  // Check for valid role
-  if (!['participant', 'host', 'mentor'].includes(role)) {
+  if (!["participant", "host", "mentor"].includes(role)) {
     return res.status(400).json({ message: "Invalid role specified." });
   }
 
-  // Role-specific validation
-  if (role === 'host' && !organizationName) {
-    return res.status(400).json({ message: "organizationName is required for role 'host'." });
-  }
-  
-  if (role === 'mentor' && !qualifications) {
-    return res.status(400).json({ message: "qualifications are required for role 'mentor'." });
+  if (role === "host" && !organizationName) {
+    return res.status(400).json({ message: "Organization name is required for the 'host' role." });
   }
 
-  if (role === 'participant' && !resume) {
-    return res.status(400).json({ message: "resume is required for role 'participant'." });
+  if (role === "mentor" && !qualifications) {
+    return res.status(400).json({ message: "Qualifications are required for the 'mentor' role." });
+  }
+
+  if (role === "participant" && !resume) {
+    console.warn("No resume provided for participant role, proceeding without it.");
   }
 
   next();
-}
+};
 
-// Create or Update User Data with input validation
-router.post("/user", validateUserInput, async (req, res) => {
+// Route to create a new user
+router.post("/user", upload.single("resume"), validateUserInput, async (req, res) => {
   const {
-    role, email, name, phoneNumber, domain, github, linkedin, bio, qualifications, organizationName, resume, profilePic, password
+    role,
+    email,
+    name,
+    phoneNumber,
+    domain,
+    github,
+    linkedin,
+    qualifications,
+    organizationName,
+    password,
   } = req.body;
 
-  // Ensure that resume is always a string or empty string if not provided
-  const resumeValue = typeof resume === "string" ? resume : "";
+  const profilePic = req.file ? req.file.path : null;
+  const resume = req.file ? req.file.path : null;
 
   try {
-    // Hash password before saving
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User with this email already exists." });
+    }
 
-    // Create new user
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
     const newUser = new User({
-      email,
       name,
+      email,
       phoneNumber,
-      domain,
-      role,
-      password: hashedPassword, // Use the hashed password
+      password: hashedPassword, // Save the hashed password
       github,
       linkedin,
-      bio,
-      qualifications: role === 'mentor' ? qualifications : undefined,
-      organizationName: role === 'host' ? organizationName : undefined,
-      resume: resumeValue,
+      domain,
+      role,
+      qualifications: role === "mentor" ? qualifications : undefined,
+      organizationName: role === "host" ? organizationName : undefined,
+      resume: role === "participant" ? resume : undefined,
       profilePic,
     });
 
+    // Save the new user to the database
     await newUser.save();
-    res.status(201).json(newUser);
+    res.status(201).json({ message: "User created successfully!", user: newUser });
+
   } catch (error) {
-    console.error("Error saving user data:", error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error creating user:", error);
+    if (error.code === 11000) {
+      // Handle duplicate key error (e.g., email already exists)
+      return res.status(400).json({ message: "Email already exists." });
+    }
+    res.status(500).json({ message: "Internal server error, please try again later." });
   }
 });
 
-// Fetch user data by MongoDB ID
+
+// Route to fetch user data by ID
 router.get("/user/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await User.findById(id); // Find user by MongoDB _id
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -87,33 +116,36 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
-// Update user data by MongoDB ID
-router.put("/user/:id", async (req, res) => {
+// Route to update user data by ID
+router.put("/user/:id", upload.single("profilePic"), async (req, res) => {
   const { id } = req.params;
   const {
-    domain, resume, github, linkedin, bio, qualifications, organizationName, profilePic
+    domain,
+    github,
+    linkedin,
+    qualifications,
+    organizationName,
   } = req.body;
 
+  const profilePic = req.file ? req.file.path : null;
+
   try {
-    let user = await User.findById(id); // Find user by MongoDB _id
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Update user fields
     user.domain = domain || user.domain;
-    user.resume = resume || user.resume;
     user.github = github || user.github;
     user.linkedin = linkedin || user.linkedin;
-    user.bio = bio || user.bio;
     user.qualifications = qualifications || user.qualifications;
     user.organizationName = organizationName || user.organizationName;
-    user.profilePic = profilePic || user.profilePic;
+    if (profilePic) user.profilePic = profilePic;
 
     await user.save();
-    res.status(200).json(user);
+    res.status(200).json({ message: "User updated successfully!", user });
   } catch (error) {
-    console.error("Error updating user data:", error);
+    console.error("Error updating user:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 });

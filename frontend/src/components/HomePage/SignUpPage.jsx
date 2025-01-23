@@ -39,8 +39,9 @@ const SignUpPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user", // Replace with your backend route
+        "http://localhost:5000/api/user", // Replace with your backend route
         userData,
+        // console.log(response),
         { headers: { "Content-Type": "multipart/form-data" } }
       );
       alert("User created successfully!");
@@ -107,30 +108,6 @@ const SignUpPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Github (Optional)
-            </label>
-            <input
-              type="url"
-              value={github}
-              onChange={(e) => setGithub(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              LinkedIn (Optional)
-            </label>
-            <input
-              type="url"
-              value={linkedin}
-              onChange={(e) => setLinkedin(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
 
@@ -214,7 +191,7 @@ const SignUpPage = () => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Profile Picture
+              Profile Picture (Optional)
             </label>
             <input
               type="file"
@@ -240,4 +217,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage
+export default SignUpPage;
