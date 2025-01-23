@@ -12,9 +12,11 @@ const UserPage = () => {
 
         {/* Action Buttons */}
         <div className="mt-8 flex flex-wrap gap-4">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">
-            View Hackathons
-          </button>
+          <Link to="/hackdisplay">
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">
+              View Hackathons
+            </button>
+          </Link>
           <Link to="/userprofile">
             <button className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition">
               Edit Profile
