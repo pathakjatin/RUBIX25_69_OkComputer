@@ -1,134 +1,124 @@
-// src/components/HostDashboard.js
-import React, { useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 
-const HostDashboard = () => {
-  const [hackathons, setHackathons] = useState([]);
-  const [newHackathon, setNewHackathon] = useState({
-    name: "",
-    description: "",
-    startDate: "",
-    endDate: "",
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewHackathon({
-      ...newHackathon,
-      [name]: value,
-    });
-  };
-
-  const handleCreateHackathon = (e) => {
-    e.preventDefault();
-    // Add new hackathon to the list
-    setHackathons([...hackathons, newHackathon]);
-    // Clear form
-    setNewHackathon({
-      name: "",
-      description: "",
-      startDate: "",
-      endDate: "",
-    });
-  };
-
-  const handleDeleteHackathon = (index) => {
-    const updatedHackathons = hackathons.filter((_, i) => i !== index);
-    setHackathons(updatedHackathons);
-  };
-
+const HostPage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-      <h1 className="text-4xl font-bold mb-6">Host Dashboard</h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-7xl mx-auto bg-white shadow-md rounded-lg p-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Welcome to Your Host Dashboard</h1>
+        <p className="text-gray-600">
+          Manage your hackathons, invite participants, and track progress all in one place.
+        </p>
 
-      {/* Create Hackathon Form */}
-      <div className="bg-white p-6 rounded shadow-md w-96">
-        <h2 className="text-2xl font-semibold mb-4">Create a New Hackathon</h2>
-        <form onSubmit={handleCreateHackathon}>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Hackathon Name</label>
-            <input
-              className="w-full px-3 py-2 border rounded"
-              type="text"
-              name="name"
-              value={newHackathon.name}
-              onChange={handleInputChange}
-              placeholder="Hackathon Name"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Description</label>
-            <textarea
-              className="w-full px-3 py-2 border rounded"
-              name="description"
-              value={newHackathon.description}
-              onChange={handleInputChange}
-              placeholder="Brief Description"
-              required
-            ></textarea>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Start Date</label>
-            <input
-              className="w-full px-3 py-2 border rounded"
-              type="date"
-              name="startDate"
-              value={newHackathon.startDate}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">End Date</label>
-            <input
-              className="w-full px-3 py-2 border rounded"
-              type="date"
-              name="endDate"
-              value={newHackathon.endDate}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <button
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded"
-            type="submit"
-          >
-            Create Hackathon
-          </button>
-        </form>
-      </div>
+        {/* Action Buttons */}
+        <div className="mt-8 flex flex-wrap gap-4">
+          <Link to="/createhackathon">
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">
+              Create Hackathon
+            </button>
+          </Link>
+          <Link to="/hostprofile">
+            <button className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition">
+              Edit Profile
+            </button>
+          </Link>
+          <Link to="/manageparticipants">
+            <button className="bg-purple-500 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-600 transition">
+              Manage Participants
+            </button>
+          </Link>
+          <Link to="/viewteams">
+            <button className="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow hover:bg-yellow-600 transition">
+              View Teams
+            </button>
+          </Link>
+        </div>
 
-      {/* List of Hackathons */}
-      <div className="mt-8 w-full max-w-4xl">
-        <h2 className="text-3xl font-bold mb-4">Manage Your Hackathons</h2>
-        {hackathons.length === 0 ? (
-          <p className="text-gray-600">No hackathons created yet.</p>
-        ) : (
-          <ul className="space-y-4">
-            {hackathons.map((hackathon, index) => (
-              <li key={index} className="bg-white p-4 rounded shadow-md flex justify-between">
-                <div>
-                  <h3 className="text-xl font-semibold">{hackathon.name}</h3>
-                  <p className="text-gray-600">{hackathon.description}</p>
-                  <p className="text-gray-500">
-                    {hackathon.startDate} to {hackathon.endDate}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleDeleteHackathon(index)}
-                  >
-                    Delete
-                  </button>
-                </div>
+        {/* Key Sections */}
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Notifications */}
+          <div className="bg-yellow-100 p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold text-yellow-800 mb-4">Notifications</h2>
+            <ul className="list-disc list-inside text-gray-700">
+              <li>Your hackathon "AI Challenge 2025" has 30 new participants!</li>
+              <li>Team "Innovators" submitted their project for review.</li>
+              <li>A participant requested additional resources.</li>
+            </ul>
+          </div>
+
+          {/* Upcoming Hackathons */}
+          <div className="bg-blue-100 p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold text-blue-800 mb-4">Your Hackathons</h2>
+            <p className="text-gray-700">Hackathons you're hosting:</p>
+            <ul className="list-disc list-inside text-gray-700 mt-2">
+              <li>AI Challenge 2025 - Feb 10 to Feb 15</li>
+              <li>Web Dev Sprint - Mar 5 to Mar 10</li>
+              <li>Cloud Hackathon - Apr 12 to Apr 17</li>
+            </ul>
+          </div>
+
+          {/* Team Management */}
+          <div className="bg-green-100 p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold text-green-800 mb-4">Team Management</h2>
+            <p className="text-gray-700">Active teams in your hackathons:</p>
+            <ul className="list-disc list-inside text-gray-700 mt-2">
+              <li>Team Innovators - AI Challenge 2025</li>
+              <li>Cloud Wizards - Cloud Hackathon</li>
+              <li>Data Gurus - Web Dev Sprint</li>
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div className="bg-purple-100 p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold text-purple-800 mb-4">Resources</h2>
+            <p className="text-gray-700">Helpful links for hosting:</p>
+            <ul className="list-disc list-inside text-gray-700 mt-2">
+              <li>
+                <a
+                  href="https://firebase.google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:underline"
+                >
+                  Firebase Hosting Guide
+                </a>
               </li>
-            ))}
-          </ul>
-        )}
+              <li>
+                <a
+                  href="https://reactjs.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:underline"
+                >
+                  React Documentation
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://tailwindcss.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:underline"
+                >
+                  TailwindCSS
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.postman.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:underline"
+                >
+                  Postman API Testing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default HostDashboard;
+export default HostPage;

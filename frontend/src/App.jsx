@@ -29,7 +29,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/user" element={<UserPage />} />
-            <Route path="/host" element={<PrivateRoute><HostPage /></PrivateRoute>} />
+            <Route path="/host" element={<HostPage />} />
             <Route path="/mentor" element={<PrivateRoute><MentorPage /></PrivateRoute>} />
             <Route path="/userprofile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
             <Route path="/mentorprofile" element={<PrivateRoute><MentorProfile /></PrivateRoute>} />
