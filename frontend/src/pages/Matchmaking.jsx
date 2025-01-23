@@ -45,17 +45,24 @@ const Matchmaking = () => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-semibold text-center mb-6">Matchmaking</h1>
+    <div className="p-6 max-w-4xl mx-auto bg-gray-50 rounded-lg shadow-lg">
+      <h1 className="text-4xl font-bold text-center text-blue-600 mb-8">
+        Matchmaking
+      </h1>
 
       {/* Domain Filter */}
-      <div className="mb-6">
-        <label htmlFor="domain" className="block text-lg font-medium mb-2">Select Your Domain</label>
+      <div className="mb-8">
+        <label
+          htmlFor="domain"
+          className="block text-lg font-medium text-gray-700 mb-2"
+        >
+          Select Your Domain
+        </label>
         <select
           id="domain"
           value={selectedDomain}
           onChange={handleDomainChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
+          className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
         >
           <option value="">All Domains</option>
           {domains.map((domain, index) => (
@@ -67,16 +74,23 @@ const Matchmaking = () => {
       </div>
 
       {/* Users List */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {filteredUsers.length > 0 ? (
           filteredUsers.map(user => (
-            <div key={user._id} className="p-4 border border-gray-300 rounded-md">
-              <h3 className="text-xl font-medium">{user.name}</h3>
-              <p className="text-gray-500">{user.domain}</p>
+            <div
+              key={user._id}
+              className="p-6 border border-gray-200 rounded-lg shadow hover:shadow-lg transition transform hover:scale-105"
+            >
+              <h3 className="text-2xl font-semibold text-gray-800 mb-2">
+                {user.name}
+              </h3>
+              <p className="text-lg text-gray-600">{user.domain}</p>
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500">No users found for this domain.</p>
+          <p className="col-span-full text-center text-gray-500 text-lg">
+            No users found for this domain.
+          </p>
         )}
       </div>
     </div>
