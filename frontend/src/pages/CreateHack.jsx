@@ -38,7 +38,6 @@ const CreateHack = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-      <h1 className="text-4xl font-bold mb-6">Host Dashboard</h1>
 
       {/* Create Hackathon Form */}
       <div className="bg-white p-6 rounded shadow-md w-96">
