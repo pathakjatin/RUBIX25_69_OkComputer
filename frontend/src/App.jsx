@@ -18,6 +18,7 @@ import LobbyPage from "./pages/LobbyPage";
 import HackathonPage from "./pages/HackathonPage";
 import JoinHackathonPage from './pages/JoinHackathonPage';
 import Leaderboard from "./pages/Leaderboard";
+import CreateHack from "./pages/CreateHack";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
             <Route path="/hackdisplay" element={<HackathonPage />} />
             <Route path="/join-hackathon/:hackathonId" element={<JoinHackathonPage />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/CreateHack" element={<CreateHack />} />
           </Routes>
         </main>
       </BrowserRouter>
