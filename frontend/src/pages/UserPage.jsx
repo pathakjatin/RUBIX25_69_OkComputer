@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const UserPage = () => {
   return (
@@ -14,9 +15,12 @@ const UserPage = () => {
           <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">
             View Hackathons
           </button>
-          <button className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition">
-            Manage Profile
-          </button>
+          <Link to="/userprofile">
+            <button className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition">
+              Edit Profile
+            </button>
+          </Link>
+
           <button className="bg-purple-500 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-600 transition">
             Join a Team
           </button>
