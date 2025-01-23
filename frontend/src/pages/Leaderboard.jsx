@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Make sure axios is imported
 
 // Timer function to calculate remaining time
 const getTimeRemaining = (endDate) => {
@@ -21,16 +22,23 @@ const Leaderboard = () => {
     seconds: 0,
   });
 
-  const [leaderboardData, setLeaderboardData] = useState([
-    { rank: 1, teamName: 'Team Alpha' },
-    { rank: 2, teamName: 'Team Beta' },
-    { rank: 3, teamName: 'Team Gamma' },
-    { rank: 4, teamName: 'Team Delta' },
-  ]);
+  const [leaderboardData, setLeaderboardData] = useState([]);
 
   const endDate = new Date('2025-02-01T00:00:00'); // Example end date
 
   useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/leaderboard'); // Make sure the URL is correct
+        console.log('Leaderboard data:', response.data); // Log the response for debugging
+        setLeaderboardData(response.data); // Update state with the fetched data
+      } catch (error) {
+        console.error('Error fetching leaderboard data:', error);
+      }
+    };
+
+    fetchLeaderboard();
+
     const interval = setInterval(() => {
       const remaining = getTimeRemaining(endDate);
       setTimeRemaining({
@@ -46,7 +54,7 @@ const Leaderboard = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [endDate]);
+  }, [endDate]); // Add any dependencies for effect, e.g., endDate or other state
 
   // Function to handle "Connect with Team" button click
   const handleConnectClick = () => {
@@ -77,6 +85,7 @@ const Leaderboard = () => {
               <tr>
                 <th className="py-3 px-4 text-sm font-medium">Rank</th>
                 <th className="py-3 px-4 text-sm font-medium text-center">Team Name</th>
+                <th className="py-3 px-4 text-sm font-medium text-center">Score</th>
               </tr>
             </thead>
             <tbody>
@@ -84,6 +93,7 @@ const Leaderboard = () => {
                 <tr key={entry.rank} className="border-b hover:bg-gray-100">
                   <td className="py-3 px-4 text-sm">{entry.rank}</td>
                   <td className="py-3 px-4 text-sm text-center">{entry.teamName}</td>
+                  <td className="py-3 px-4 text-sm text-center">{entry.score}</td>
                 </tr>
               ))}
             </tbody>
