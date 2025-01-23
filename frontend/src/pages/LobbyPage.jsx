@@ -18,7 +18,7 @@ const LobbyPage = () => {
   };
 
   const handleGroupChat = () => {
-    navigate('/group-chat'); // Replace with the actual route of your group chat page
+    navigate('/room'); // Replace with the actual route of your group chat page
   };
 
   const handleGithubChange = (id, value) => {

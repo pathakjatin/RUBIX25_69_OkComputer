@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 const JoinHackathonPage = () => {
   const { hackathonId } = useParams(); // Get the hackathonId from the URL
@@ -76,12 +76,13 @@ const JoinHackathonPage = () => {
         </div>
 
         <div className="flex items-center justify-between">
+          <Link to = "/leaderboard">
           <button
             type="submit"
             className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
           >
             Submit
-          </button>
+          </button></Link>
           <button
             type="button"
             onClick={handleMatchmaking}
