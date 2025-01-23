@@ -16,7 +16,10 @@ import Room from "./pages/Room"; // Room component
 import VideoCall from "./pages/VideoCall"; // Room component
 import LobbyPage from "./pages/LobbyPage";
 import HackathonPage from "./pages/HackathonPage";
+<<<<<<< Updated upstream
 import JoinHackathonPage from './pages/JoinHackathonPage';
+=======
+>>>>>>> Stashed changes
 import Leaderboard from "./pages/Leaderboard";
 
 function App() {
@@ -39,7 +42,10 @@ function App() {
             <Route path="/video" element={<VideoCall />} />
             <Route path="/lobby" element={<LobbyPage />} />
             <Route path="/hackdisplay" element={<HackathonPage />} />
+<<<<<<< Updated upstream
             <Route path="/join-hackathon/:hackathonId" element={<JoinHackathonPage />} />
+=======
+>>>>>>> Stashed changes
             <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </main>
