@@ -48,6 +48,11 @@ const Leaderboard = () => {
     return () => clearInterval(interval);
   }, [endDate]);
 
+  // Function to handle "Connect with Team" button click
+  const handleConnectClick = () => {
+    alert('Connecting you with the team...');
+  };
+
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-50">
       <div className="w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg">
@@ -66,23 +71,33 @@ const Leaderboard = () => {
         </div>
 
         {/* Leaderboard Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left table-auto">
+        <div className="overflow-x-auto flex justify-center">
+          <table className="w-2/3 text-left table-auto">
             <thead className="bg-green-600 text-white">
               <tr>
-                <th className="py-3 px-5 text-sm font-medium">Rank</th>
-                <th className="py-3 px-5 text-sm font-medium">Team Name</th>
+                <th className="py-3 px-4 text-sm font-medium">Rank</th>
+                <th className="py-3 px-4 text-sm font-medium text-center">Team Name</th>
               </tr>
             </thead>
             <tbody>
               {leaderboardData.map((entry) => (
                 <tr key={entry.rank} className="border-b hover:bg-gray-100">
-                  <td className="py-3 px-5 text-sm">{entry.rank}</td>
-                  <td className="py-3 px-5 text-sm">{entry.teamName}</td>
+                  <td className="py-3 px-4 text-sm">{entry.rank}</td>
+                  <td className="py-3 px-4 text-sm text-center">{entry.teamName}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Connect with Team Button */}
+        <div className="text-center mt-6">
+          <button
+            onClick={handleConnectClick}
+            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Connect with Team
+          </button>
         </div>
       </div>
     </div>

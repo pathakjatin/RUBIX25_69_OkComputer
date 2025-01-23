@@ -107,7 +107,7 @@ const UserProfilePage = () => {
       <div className="bg-white p-8 rounded shadow-md w-96">
         <form onSubmit={handleSubmit}>
           {profilePic && (
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-4">``
               <img
                 src={profilePic}
                 alt="Profile"
