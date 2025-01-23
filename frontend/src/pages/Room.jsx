@@ -6,11 +6,11 @@ const Room = () => {
   const [message, setMessage] = useState('');
   const [user, setUser] = useState('');
   const [room, setRoom] = useState('general');
-  const [zoomMeetingUrl, setZoomMeetingUrl] = useState(null); // Store Zoom meeting URL
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3000');
+    // Create socket connection
+    const newSocket = io('http://localhost:5000');
     setSocket(newSocket);
 
     // Listen for incoming messages from the server
@@ -21,11 +21,12 @@ const Room = () => {
     // Join the room when socket is connected
     newSocket.emit('join_room', room);
 
-    return () => newSocket.close();
+    return () => newSocket.close(); // Clean up on component unmount
   }, [room]);
 
   const handleSendMessage = () => {
     if (message.trim() && user.trim()) {
+      // Emit the chat message to the server
       socket.emit('chat_message', { room, message, sender: user });
       setMessage('');
     } else {
@@ -33,21 +34,9 @@ const Room = () => {
     }
   };
 
-  const handleCreateZoomMeeting = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/create-zoom-meeting', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user }),
-      });
-
-      const data = await response.json();
-      setZoomMeetingUrl(data.join_url); // Set Zoom meeting URL
-    } catch (error) {
-      console.error('Error creating Zoom meeting:', error);
-    }
+  const handleCreateMeeting = () => {
+    // Placeholder function for creating a meeting (if you have specific logic)
+    alert('Create meeting functionality coming soon!');
   };
 
   return (
@@ -101,26 +90,14 @@ const Room = () => {
           </button>
         </div>
 
-        {/* Zoom Meeting Button */}
+        {/* Create Meeting Button */}
         <div className="mt-4">
           <button
-            onClick={handleCreateZoomMeeting}
+            onClick={handleCreateMeeting}
             className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
           >
-            Create Zoom Meeting
+            Create Meeting
           </button>
-          {zoomMeetingUrl && (
-            <div className="mt-4">
-              <a
-                href={zoomMeetingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                Join Zoom Meeting
-              </a>
-            </div>
-          )}
         </div>
       </div>
     </div>
