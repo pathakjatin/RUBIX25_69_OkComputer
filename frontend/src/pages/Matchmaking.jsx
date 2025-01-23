@@ -1,40 +1,45 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Ensure axios is installed
 
 const Matchmaking = () => {
-  // State for selected domain and available users
   const [selectedDomain, setSelectedDomain] = useState('');
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
 
-  // Simulated user data (replace this with real data from your backend)
-  const allUsers = [
-    { id: 1, name: 'John Doe', domain: 'Full Stack Web Development' },
-    { id: 2, name: 'Jane Smith', domain: 'Data Science' },
-    { id: 3, name: 'Alice Johnson', domain: 'AI/ML' },
-    { id: 4, name: 'Bob Brown', domain: 'Full Stack Web Development' },
-    { id: 5, name: 'Charlie Davis', domain: 'Cyber Security' },
-  ];
-
-  // Domain options for filtering
   const domains = [
-    'Full Stack Web Development',
+    'Full Stack Web Dev',
     'Data Science',
-    'AI/ML',
+    'AI-ML',
+    'AR-VR',
     'Cyber Security',
     'Cloud Engineering',
   ];
 
-  // Effect to filter users based on selected domain
+  // Fetch all users from the backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/users'); // Update the URL to match your backend endpoint
+        setUsers(response.data); // Set fetched users to the state
+        setFilteredUsers(response.data); // Initialize filtered users
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // Filter users based on selected domain
   useEffect(() => {
     if (selectedDomain) {
-      const filtered = allUsers.filter(user => user.domain === selectedDomain);
+      const filtered = users.filter(user => user.domain === selectedDomain);
       setFilteredUsers(filtered);
     } else {
-      setFilteredUsers(allUsers);
+      setFilteredUsers(users);
     }
-  }, [selectedDomain]);
+  }, [selectedDomain, users]);
 
-  // Handler for domain change
   const handleDomainChange = (event) => {
     setSelectedDomain(event.target.value);
   };
@@ -65,7 +70,7 @@ const Matchmaking = () => {
       <div className="space-y-4">
         {filteredUsers.length > 0 ? (
           filteredUsers.map(user => (
-            <div key={user.id} className="p-4 border border-gray-300 rounded-md">
+            <div key={user._id} className="p-4 border border-gray-300 rounded-md">
               <h3 className="text-xl font-medium">{user.name}</h3>
               <p className="text-gray-500">{user.domain}</p>
             </div>
