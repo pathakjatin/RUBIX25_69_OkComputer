@@ -14,6 +14,8 @@ import { AuthProvide } from "./context/AuthProvide"; // Provides authentication 
 import Matchmaking from "./pages/Matchmaking"; // Matchmaking component
 import Room from "./pages/Room"; // Room component
 import VideoCall from "./pages/VideoCall"; // Room component
+import LobbyPage from "./pages/LobbyPage";
+import HackathonPage from "./pages/HackathonPage";
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
             <Route path="/matchmaking" element={<PrivateRoute><Matchmaking /></PrivateRoute>} />
             <Route path="/room" element={<Room />} />
             <Route path="/video" element={<VideoCall />} />
+            <Route path="/lobby" element={<LobbyPage />} />
+            <Route path="/hackdisplay" element={<HackathonPage />} />
           </Routes>
         </main>
       </BrowserRouter>
