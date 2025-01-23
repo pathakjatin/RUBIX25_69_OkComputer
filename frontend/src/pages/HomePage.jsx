@@ -22,7 +22,8 @@ const Homepage = () => {
       <section className="bg-blue-500 text-white text-center py-24">
         <h2 className="text-4xl font-extrabold">Join the Ultimate Hackathon Experience</h2>
         <p className="mt-4 text-xl">Collaborate, Innovate, and Win with Developers Worldwide</p>
-        <a href="#join" className="mt-8 inline-block bg-yellow-500 text-blue-800 font-bold py-2 px-6 rounded-lg">Join Now</a>
+        <a href="/login" className="mt-8 inline-block bg-yellow-500 text-blue-800 font-bold py-2 px-6 rounded-lg">Join Now</a>
+        
       </section>
 
       {/* Features Section */}
