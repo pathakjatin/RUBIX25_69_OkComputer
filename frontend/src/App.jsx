@@ -33,7 +33,7 @@ function App() {
             <Route path="/mentor" element={<PrivateRoute><MentorPage /></PrivateRoute>} />
             <Route path="/userprofile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
             <Route path="/mentorprofile" element={<PrivateRoute><MentorProfile /></PrivateRoute>} />
-            <Route path="/hostprofile" element={<PrivateRoute><HostProfile /></PrivateRoute>} />
+            <Route path="/hostprofile" element={<HostProfile />} />
             <Route path="/matchmaking" element={<PrivateRoute><Matchmaking /></PrivateRoute>} />
             <Route path="/room" element={<Room />} />
             <Route path="/video" element={<VideoCall />} />
