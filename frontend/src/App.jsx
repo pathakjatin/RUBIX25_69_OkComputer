@@ -19,6 +19,7 @@ import HackathonPage from "./pages/HackathonPage";
 import JoinHackathonPage from './pages/JoinHackathonPage';
 import Leaderboard from "./pages/Leaderboard";
 import CreateHack from "./pages/CreateHack";
+import ManageParticipantsPage from "./pages/ManageParticipantsPage";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
             <Route path="/join-hackathon/:hackathonId" element={<JoinHackathonPage />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/CreateHack" element={<CreateHack />} />
+            <Route path="/manageparticipants" element={<ManageParticipantsPage />} />
           </Routes>
         </main>
       </BrowserRouter>
