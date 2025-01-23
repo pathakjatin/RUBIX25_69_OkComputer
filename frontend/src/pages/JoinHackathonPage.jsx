@@ -5,7 +5,7 @@ const JoinHackathonPage = () => {
   const { hackathonId } = useParams(); // Get the hackathonId from the URL
   const navigate = useNavigate(); // useNavigate hook for navigation
   
-  const [name, setName] = useState('');
+  const [teamName, setTeamName] = useState('');
   const [teammates, setTeammates] = useState([{ name: '' }]); // Initial state with the user (name of the user)
 
   const handleAddTeammate = () => {
@@ -25,7 +25,7 @@ const JoinHackathonPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle submission of form data here (send to backend or state)
-    console.log('User Data:', { name, teammates });
+    console.log('Team Data:', { teamName, teammates });
     
     // After submission, navigate to the hackathon's main page or confirmation page
     navigate(`/hackathon/${hackathonId}`);
@@ -42,12 +42,12 @@ const JoinHackathonPage = () => {
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="mb-4">
-          <label className="block text-xl font-semibold mb-2">Your Name</label>
+          <label className="block text-xl font-semibold mb-2">Your Team Name</label>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value)}
+            placeholder="Enter your team name"
             className="w-full p-4 border border-gray-300 rounded-lg"
             required
           />
