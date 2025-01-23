@@ -2,8 +2,8 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+
 
 dotenv.config(); // Load environment variables
 
@@ -37,20 +37,8 @@ app.use(express.json());
 // Import user routes
 const userRoutes = require('./src/participants/UserData.route');
 app.use('/api', userRoutes); // Register the user routes under the /api prefix
-
-// MongoDB connection
-const MONGO_URI = process.env.MONGO_URI;
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('Error connecting to MongoDB:', err));
-
-// MongoDB connection error handling
-mongoose.connection.on('error', (err) => {
-  console.error('MongoDB connection error:', err);
-});
-mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB connection lost. Attempting to reconnect...');
-});
+const LeaderboardRoutes = require('./routes/leaderboard/Leaderboard.route');
+app.use('/api', LeaderboardRoutes); // Register the user routes under the /api prefix
 
 // Socket.IO connection handler
 io.on('connection', (socket) => {

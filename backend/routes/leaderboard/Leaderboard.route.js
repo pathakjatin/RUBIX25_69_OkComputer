@@ -1,24 +1,38 @@
 const express = require('express');
 const router = express.Router();
-const Leaderboard = require('../models/Leaderboard'); // Correct path to the Leaderboard model
+const { MongoClient } = require('mongodb');
+const  {readLeaderboard}  = require('../../models/Leaderboard.js'); // Correct path to the Leaderboard model
 
 // Route to fetch leaderboard data
 router.get('/leaderboard', async (req, res) => {
-  try {
-    // Fetch and sort leaderboard entries by score in descending order
-    const leaderboard = await Leaderboard.find().sort({ score: -1 }); // Sort by score
+  
+  const uri = 'mongodb+srv://yash6961:tznzeQKM1xEiXqHk@cluster0.z6zws.mongodb.net/Hackathon?retryWrites=true&w=majority&appName=Cluster0';
+  const client = await new MongoClient(uri);
+ 
+  
+  // Fetch and sort leaderboard entries by score in descending order
+  const leaderboard = await readLeaderboard(client);
+  console.log('Leaderboard:', leaderboard);
+  const leaderboardinfo = await leaderboard.find().sort({ score: -1 }); // Sort by score
+try{
+  // Add rank to each team based on their position in the sorted list
+  var index = 0;
+  const leaderboardWithRank = await leaderboardinfo.map((team) =>{
+    index = index+1;
+    return ({
+    rank: index,  // Rank is index + 1 (1-based index)
+    teamName: team.team_name,
+    score: team.score,
+    members: team.members,
 
-    // Add rank to each team based on their position in the sorted list
-    const leaderboardWithRank = leaderboard.map((team, index) => ({
-      rank: index + 1,  // Rank is index + 1 (1-based index)
-      teamName: team.team_name,
-      score: team.score,
-      members: team.members,
-    }));
+})});
 
-    res.json(leaderboardWithRank); // Send leaderboard data as response
+index = 0;
+    const result = await leaderboardWithRank.toArray();
+    res.send(result);
+     // Send leaderboard data as response
   } catch (err) {
-    res.status(500).json({ error: 'Error fetching leaderboard data' });
+    res.status(500).json({ error: err.message});
   }
 });
 
