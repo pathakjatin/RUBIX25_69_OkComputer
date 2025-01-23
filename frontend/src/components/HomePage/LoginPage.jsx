@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { GoogleAuthProvider } from "firebase/auth"; // Import GoogleAuthProvider
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebase/firebase.config"; // Adjust based on your Firebase config
 
 const LoginPage = () => {
   const [loginType, setLoginType] = useState("user");
@@ -11,7 +8,7 @@ const LoginPage = () => {
     password: "",
   });
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const handleLoginTypeChange = (type) => setLoginType(type);
   const handleInputChange = (e) => {
@@ -21,15 +18,29 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Reset error before attempting login
+    setError("");
+
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      console.log(`${loginType.charAt(0).toUpperCase() + loginType.slice(1)} login successful`);
-      
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message || "Login failed");
+      }
+
+      const data = await response.json();
+      console.log(`${loginType.charAt(0).toUpperCase() + loginType.slice(1)} login successful`, data);
+
       // Role-based redirection
-      if (loginType === "host") {
+      if (data.role === "host") {
         navigate("/host");
-      } else if (loginType === "mentor") {
+      } else if (data.role === "mentor") {
         navigate("/mentor");
       } else {
         navigate("/user");
@@ -37,28 +48,6 @@ const LoginPage = () => {
     } catch (err) {
       console.error("Login Error:", err.message);
       setError(`Login failed: ${err.message}`);
-    }
-  };
-
-  // Google login handler
-  const handleGoogleLogin = async () => {
-    const googleProvider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      console.log(`${user.displayName} logged in with Google`);
-
-      // Role-based redirection after Google login
-      if (loginType === "host") {
-        navigate("/host");
-      } else if (loginType === "mentor") {
-        navigate("/mentor");
-      } else {
-        navigate("/user");
-      }
-    } catch (err) {
-      console.error("Google Login Error:", err.message);
-      setError(`Google login failed: ${err.message}`);
     }
   };
 
@@ -120,15 +109,8 @@ const LoginPage = () => {
           </div>
         </form>
 
-        <button
-          onClick={handleGoogleLogin}
-          className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 w-full rounded"
-        >
-          Login with Google
-        </button>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
       </div>
-
-      {error && <p className="text-red-500 mt-4">{error}</p>}
     </div>
   );
 };
