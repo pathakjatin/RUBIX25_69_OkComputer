@@ -39,6 +39,8 @@ const userRoutes = require('./src/participants/UserData.route');
 app.use('/api', userRoutes); // Register the user routes under the /api prefix
 const LeaderboardRoutes = require('./routes/leaderboard/Leaderboard.route');
 app.use('/api', LeaderboardRoutes); // Register the user routes under the /api prefix
+const HackathonRoutes = require('./routes/storehackathon/Hackathon.route');
+app.use('/api',HackathonRoutes) ;// Register the hackathon routes
 
 // Socket.IO connection handler
 io.on('connection', (socket) => {
