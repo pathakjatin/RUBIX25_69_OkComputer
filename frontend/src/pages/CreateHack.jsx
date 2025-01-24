@@ -1,5 +1,7 @@
-// src/components/HostDashboard.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from 'axios'; // Importing axios for making API requests
+
+const API_URI = "http://localhost:5000/api/hackathon"; // API endpoint to create hackathons
 
 const CreateHack = () => {
   const [hackathons, setHackathons] = useState([]);
@@ -10,6 +12,7 @@ const CreateHack = () => {
     endDate: "",
   });
 
+  // Handle input field changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewHackathon({
@@ -18,23 +21,49 @@ const CreateHack = () => {
     });
   };
 
-  const handleCreateHackathon = (e) => {
-    e.preventDefault();
-    // Add new hackathon to the list
-    setHackathons([...hackathons, newHackathon]);
-    // Clear form
-    setNewHackathon({
-      name: "",
-      description: "",
-      startDate: "",
-      endDate: "",
-    });
+  // Function to fetch hackathons from the server (using axios)
+  const fetchHackathons = async () => {
+    try {
+      const response = await axios.get(API_URI); // Make GET request to fetch hackathons
+      setHackathons(response.data); // Update state with the fetched hackathons
+    } catch (error) {
+      console.error("Error fetching hackathons:", error);
+    }
   };
 
-  const handleDeleteHackathon = (index) => {
-    const updatedHackathons = hackathons.filter((_, i) => i !== index);
-    setHackathons(updatedHackathons);
+  // Handle hackathon creation (using axios)
+  const handleCreateHackathon = async (e) => {
+    e.preventDefault(); // Prevent page refresh
+
+    try {
+      // Making POST request to create a new hackathon
+      const response = await axios.post(API_URI, newHackathon);
+      if (response.status === 201) {
+        console.log("Hackathon created successfully:", response.data);
+        setNewHackathon({ name: "", description: "", startDate: "", endDate: "" });
+        fetchHackathons(); // Fetch updated list of hackathons
+      }
+    } catch (error) {
+      console.error("Error creating hackathon:", error);
+    }
   };
+
+  // Handle hackathon deletion (using axios)
+  const handleDeleteHackathon = async (id) => {
+    try {
+      const response = await axios.delete(`${API_URI}/${id}`);
+      if (response.status === 200) {
+        fetchHackathons(); // Fetch updated list after deletion
+      }
+    } catch (error) {
+      console.error("Error deleting hackathon:", error);
+    }
+  };
+
+  // Fetch hackathons on component mount
+  useEffect(() => {
+    fetchHackathons();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
@@ -116,7 +145,7 @@ const CreateHack = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleDeleteHackathon(index)}
+                    onClick={() => handleDeleteHackathon(hackathon._id)} // Use the _id for deletion
                   >
                     Delete
                   </button>
