@@ -40,9 +40,9 @@ const HackathonPage = () => {
                 {hackathon.name}
               </h3>
               <p className="text-gray-700 mb-4">{hackathon.description}</p>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                Learn More
-              </button>
+              <a className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition" href = "http://localhost:5173/join-hackathon">
+                Join Now
+              </a>
             </div>
           ))}
         </div>

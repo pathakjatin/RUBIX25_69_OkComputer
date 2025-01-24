@@ -41,7 +41,7 @@ function App() {
             <Route path="/video" element={<VideoCall />} />
             <Route path="/lobby" element={<LobbyPage />} />
             <Route path="/hackdisplay" element={<HackathonPage />} />
-            <Route path="/join-hackathon/:hackathonId" element={<JoinHackathonPage />} />
+            <Route path="/join-hackathon" element={<JoinHackathonPage />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/CreateHack" element={<CreateHack />} />
             <Route path="/manageparticipants" element={<ManageParticipantsPage />} />
