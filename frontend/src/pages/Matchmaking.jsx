@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Ensure axios is installed
 
 const Matchmaking = () => {
   const [selectedDomain, setSelectedDomain] = useState('');
@@ -15,25 +14,28 @@ const Matchmaking = () => {
     'Cloud Engineering',
   ];
 
-  // Fetch all users from the backend
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/users'); // Update the URL to match your backend endpoint
-        setUsers(response.data); // Set fetched users to the state
-        setFilteredUsers(response.data); // Initialize filtered users
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
+  // Dummy data
+  const dummyUsers = [
+    { _id: '1', name: 'Alice Johnson', domain: 'Full Stack Web Dev' },
+    { _id: '2', name: 'Bob Smith', domain: 'Data Science' },
+    { _id: '3', name: 'Charlie Brown', domain: 'AI-ML' },
+    { _id: '4', name: 'Diana Prince', domain: 'AR-VR' },
+    { _id: '5', name: 'Evan Harris', domain: 'Cyber Security' },
+    { _id: '6', name: 'Fiona Clarke', domain: 'Cloud Engineering' },
+    { _id: '7', name: 'George Baker', domain: 'Full Stack Web Dev' },
+    { _id: '8', name: 'Hannah Lee', domain: 'Data Science' },
+  ];
 
-    fetchUsers();
+  // Simulate fetching data from a backend
+  useEffect(() => {
+    setUsers(dummyUsers); // Set dummy users
+    setFilteredUsers(dummyUsers); // Initialize filtered users
   }, []);
 
   // Filter users based on selected domain
   useEffect(() => {
     if (selectedDomain) {
-      const filtered = users.filter(user => user.domain === selectedDomain);
+      const filtered = users.filter((user) => user.domain === selectedDomain);
       setFilteredUsers(filtered);
     } else {
       setFilteredUsers(users);
@@ -76,7 +78,7 @@ const Matchmaking = () => {
       {/* Users List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {filteredUsers.length > 0 ? (
-          filteredUsers.map(user => (
+          filteredUsers.map((user) => (
             <div
               key={user._id}
               className="p-6 border border-gray-200 rounded-lg shadow hover:shadow-lg transition transform hover:scale-105"
