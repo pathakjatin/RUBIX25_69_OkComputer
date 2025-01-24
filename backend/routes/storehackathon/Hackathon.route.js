@@ -4,6 +4,23 @@ const router = express.Router();
 const { storeHackathon } = require('../../models/Hackathon.js'); // Import the model
 
 // Route to handle creating a new hackathon
+//to GET the hackathons
+router.get('/hackathon', async (req, res) => {
+  const uri = 'mongodb+srv://yash6961:tznzeQKM1xEiXqHk@cluster0.z6zws.mongodb.net/Hackathon?retryWrites=true&w=majority&appName=Cluster0'; // MongoDB URI
+  const client = new MongoClient(uri); // Initialize MongoDB client
+
+  try {
+    await client.connect(); // Connect to the MongoDB client
+    const hackathonCollection = await storeHackathon(client); // Get the collection from the connected client
+    const hackathons = await hackathonCollection.find({}).toArray(); // Find all hackathons in the collection
+    res.status(200).json(hackathons); // Send back the hackathons as JSON
+  } catch (err) {
+    console.error('Error fetching hackathons:', err.message); // Handle any errors during database operations
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    await client.close(); // Ensure the MongoDB client gets closed after the operation
+  }
+});
 router.post('/hackathon', async (req, res) => {
   const uri = 'mongodb+srv://yash6961:tznzeQKM1xEiXqHk@cluster0.z6zws.mongodb.net/Hackathon?retryWrites=true&w=majority&appName=Cluster0';
   

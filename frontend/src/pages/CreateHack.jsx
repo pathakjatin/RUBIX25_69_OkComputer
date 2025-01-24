@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios'; // Importing axios for making API requests
 
-const API_URI = "http://localhost:5000/api/hackathon"; // API endpoint to create hackathons
+const API_URI = "http://localhost:5000/api/hackathon";
 
 const CreateHack = () => {
   const [hackathons, setHackathons] = useState([]);
@@ -12,7 +11,35 @@ const CreateHack = () => {
     endDate: "",
   });
 
-  // Handle input field changes
+  // State for loading and error messages
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch Hackathons
+  const fetchHackathons = async () => {
+    setLoading(true); // Set loading to true while fetching
+    setError(null); // Reset error state
+    try {
+      const response = await fetch(API_URI);
+      if (!response.ok) {
+        throw new Error("Failed to fetch hackathons");
+      }
+      const data = await response.json();
+      setHackathons(data); // Set the fetched hackathons to state
+    } catch (error) {
+      setError("Error fetching hackathons");
+      console.error("Error fetching hackathons:", error);
+    }finally {
+      setLoading(false); // Set loading to false after fetching
+    }
+  };
+
+  // Run the fetch on component mount
+  useEffect(() => {
+    fetchHackathons(); 
+  }, []);
+
+  // Handle input changes in the form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewHackathon({
@@ -21,135 +48,114 @@ const CreateHack = () => {
     });
   };
 
-  // Function to fetch hackathons from the server (using axios)
-  const fetchHackathons = async () => {
-    try {
-      const response = await axios.get(API_URI); // Make GET request to fetch hackathons
-      setHackathons(response.data); // Update state with the fetched hackathons
-    } catch (error) {
-      console.error("Error fetching hackathons:", error);
-    }
-  };
-
-  // Handle hackathon creation (using axios)
+  // Handle form submission for creating a new hackathon
   const handleCreateHackathon = async (e) => {
-    e.preventDefault(); // Prevent page refresh
-
+    e.preventDefault();
     try {
-      // Making POST request to create a new hackathon
-      const response = await axios.post(API_URI, newHackathon);
-      if (response.status === 201) {
-        console.log("Hackathon created successfully:", response.data);
+      const response = await fetch(API_URI, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newHackathon),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Hackathon created successfully with ID:", data.id);
+
+        // Clear the form
         setNewHackathon({ name: "", description: "", startDate: "", endDate: "" });
-        fetchHackathons(); // Fetch updated list of hackathons
+
+        // Fetch updated list of hackathons after creation
+        fetchHackathons();
+      } else {
+        console.error("Error creating hackathon:", response.statusText);
       }
     } catch (error) {
       console.error("Error creating hackathon:", error);
     }
   };
 
-  // Handle hackathon deletion (using axios)
-  const handleDeleteHackathon = async (id) => {
-    try {
-      const response = await axios.delete(`${API_URI}/${id}`);
-      if (response.status === 200) {
-        fetchHackathons(); // Fetch updated list after deletion
-      }
-    } catch (error) {
-      console.error("Error deleting hackathon:", error);
-    }
-  };
-
-  // Fetch hackathons on component mount
-  useEffect(() => {
-    fetchHackathons();
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-
-      {/* Create Hackathon Form */}
-      <div className="bg-white p-6 rounded shadow-md w-96">
-        <h2 className="text-2xl font-semibold mb-4">Create a New Hackathon</h2>
-        <form onSubmit={handleCreateHackathon}>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Hackathon Name</label>
+    <div className="create-hack-container max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      {/* Hackathon Form */}
+      <form onSubmit={handleCreateHackathon} className="space-y-6">
+        <h2 className="text-3xl font-bold text-center text-gray-800">Create New Hackathon</h2>
+        
+        <div>
+          <input
+            type="text"
+            name="name"
+            value={newHackathon.name}
+            onChange={handleInputChange}
+            placeholder="Hackathon Name"
+            required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+  
+        <div>
+          <textarea
+            name="description"
+            value={newHackathon.description}
+            onChange={handleInputChange}
+            placeholder="Description"
+            required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+  
+        <div className="grid grid-cols-2 gap-4">
+          <div>
             <input
-              className="w-full px-3 py-2 border rounded"
-              type="text"
-              name="name"
-              value={newHackathon.name}
-              onChange={handleInputChange}
-              placeholder="Hackathon Name"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Description</label>
-            <textarea
-              className="w-full px-3 py-2 border rounded"
-              name="description"
-              value={newHackathon.description}
-              onChange={handleInputChange}
-              placeholder="Brief Description"
-              required
-            ></textarea>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Start Date</label>
-            <input
-              className="w-full px-3 py-2 border rounded"
               type="date"
               name="startDate"
               value={newHackathon.startDate}
               onChange={handleInputChange}
               required
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">End Date</label>
+          <div>
             <input
-              className="w-full px-3 py-2 border rounded"
               type="date"
               name="endDate"
               value={newHackathon.endDate}
               onChange={handleInputChange}
               required
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
-          <button
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded"
-            type="submit"
-          >
-            Create Hackathon
-          </button>
-        </form>
-      </div>
-
+        </div>
+  
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-3 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 ${loading && 'opacity-50 cursor-not-allowed'}`}
+        >
+          {loading ? "Creating..." : "Create Hackathon"}
+        </button>
+      </form>
+  
       {/* List of Hackathons */}
-      <div className="mt-8 w-full max-w-4xl">
-        <h2 className="text-3xl font-bold mb-4">Manage Your Hackathons</h2>
-        {hackathons.length === 0 ? (
-          <p className="text-gray-600">No hackathons created yet.</p>
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-center text-gray-800">Your Hackathons</h2>
+        {loading ? (
+          <p className="text-center text-gray-600">Loading hackathons...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : hackathons.length === 0 ? (
+          <p className="text-center text-gray-600">No hackathons created yet.</p>
         ) : (
           <ul className="space-y-4">
-            {hackathons.map((hackathon, index) => (
-              <li key={index} className="bg-white p-4 rounded shadow-md flex justify-between">
-                <div>
-                  <h3 className="text-xl font-semibold">{hackathon.name}</h3>
-                  <p className="text-gray-600">{hackathon.description}</p>
-                  <p className="text-gray-500">
-                    {hackathon.startDate} to {hackathon.endDate}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleDeleteHackathon(hackathon._id)} // Use the _id for deletion
-                  >
-                    Delete
-                  </button>
-                </div>
+            {hackathons.map((hackathon) => (
+              <li key={hackathon.id} className="bg-gray-50 p-4 rounded-lg shadow-md hover:bg-gray-100">
+                <h3 className="text-xl font-semibold text-gray-800">{hackathon.name}</h3>
+                <p className="text-gray-600">{hackathon.description}</p>
+                <p className="text-gray-500">
+                  {new Date(hackathon.startDate).toLocaleDateString()} to {new Date(hackathon.endDate).toLocaleDateString()}
+                </p>
               </li>
             ))}
           </ul>
@@ -158,5 +164,5 @@ const CreateHack = () => {
     </div>
   );
 };
-
+  
 export default CreateHack;

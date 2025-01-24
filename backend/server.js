@@ -35,7 +35,7 @@ const io = socketIo(server, {
 app.use(express.json());
 
 // Import user routes
-const userRoutes = require('./src/participants/UserData.route');
+const userRoutes = require('./routes/userdata/Userdata.route');
 app.use('/api', userRoutes); // Register the user routes under the /api prefix
 const LeaderboardRoutes = require('./routes/leaderboard/Leaderboard.route');
 app.use('/api', LeaderboardRoutes); // Register the user routes under the /api prefix

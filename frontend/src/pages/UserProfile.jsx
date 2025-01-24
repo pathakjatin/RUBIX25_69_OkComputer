@@ -23,7 +23,7 @@ const UserProfilePage = () => {
       if (user) {
         try {
           const response = await axios.get(
-            `http://localhost:3000/api/user/${user.uid}`
+            `http://localhost:5000/api/userdata/${user.uid}`
           );
           const data = response.data;
           setDomain(data.domain || ""); // Default to empty if no data
