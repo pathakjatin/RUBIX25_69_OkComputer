@@ -23,14 +23,16 @@ const LoginPage = () => {
     e.preventDefault();
     setError(""); // Reset error before attempting login
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
       console.log(`${loginType.charAt(0).toUpperCase() + loginType.slice(1)} login successful`);
-      
+
       // Role-based redirection
       if (loginType === "host") {
         navigate("/host");
-      } else if (loginType === "mentor") {
-        navigate("/mentor");
       } else {
         navigate("/user");
       }
@@ -51,8 +53,6 @@ const LoginPage = () => {
       // Role-based redirection after Google login
       if (loginType === "host") {
         navigate("/host");
-      } else if (loginType === "mentor") {
-        navigate("/mentor");
       } else {
         navigate("/user");
       }
@@ -67,11 +67,13 @@ const LoginPage = () => {
       <h1 className="text-3xl font-bold mb-6">Login to Virtual Hackathon Platform</h1>
 
       <div className="flex mb-6 space-x-4">
-        {["user", "host", "mentor"].map((type) => (
+        {["user", "host"].map((type) => (
           <button
             key={type}
             onClick={() => handleLoginTypeChange(type)}
-            className={`py-2 px-4 rounded ${loginType === type ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`py-2 px-4 rounded ${
+              loginType === type ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
           >
             {type.charAt(0).toUpperCase() + type.slice(1)} Login
           </button>

@@ -13,7 +13,6 @@ const SignUpPage = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [organizationName, setOrganizationName] = useState("");
   const [resume, setResume] = useState(null);
-  const [qualifications, setQualifications] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,14 +33,11 @@ const SignUpPage = () => {
     if (profilePic) userData.append("profilePic", profilePic);
     if (role === "host") userData.append("organizationName", organizationName);
     if (role === "participant" && resume) userData.append("resume", resume);
-    if (role === "mentor" && qualifications)
-      userData.append("qualifications", qualifications);
 
     try {
       const response = await axios.post(
         "http://localhost:5000/api/user", // Replace with your backend route
         userData,
-        // console.log(response),
         { headers: { "Content-Type": "multipart/form-data" } }
       );
       alert("User created successfully!");
@@ -142,7 +138,6 @@ const SignUpPage = () => {
             >
               <option value="participant">Participant</option>
               <option value="host">Host</option>
-              <option value="mentor">Mentor</option>
             </select>
           </div>
 
@@ -169,20 +164,6 @@ const SignUpPage = () => {
               <input
                 type="file"
                 onChange={(e) => setResume(e.target.files[0])}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
-          )}
-
-          {role === "mentor" && (
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Qualifications (Required for Mentor)
-              </label>
-              <textarea
-                value={qualifications}
-                onChange={(e) => setQualifications(e.target.value)}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 required
               />
