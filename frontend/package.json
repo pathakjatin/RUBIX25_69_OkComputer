@@ -12,15 +12,19 @@
   "dependencies": {
     "@jitsi/react-sdk": "^1.4.0",
     "axios": "^1.7.9",
+    "clsx": "^2.1.1",
     "firebase": "^11.2.0",
+    "framer-motion": "^12.4.7",
     "frontend": "file:",
     "jitsi": "^1.1.0",
     "mongoose": "^8.9.5",
+    "motion": "^12.4.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0",
-    "react-router-dom": "^7.1.3",
-    "socket.io-client": "^4.8.1"
+    "react-router-dom": "^7.2.0",
+    "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

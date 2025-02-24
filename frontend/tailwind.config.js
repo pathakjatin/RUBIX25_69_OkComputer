@@ -1,24 +1,33 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
+const { default: flattenColorPalette } = require("tailwindcss/lib/util/flattenColorPalette");
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
-      colors:{
-        bodyBg : "#EEF0F2",
-        primarytxt : "#141414",
-        secondarytxt : "#011638",
-        highlight : "#EEC643",
-        accent : "#0D21A1",
+      fontFamily: {
+        primaryfont: ["'Montserrat'", "serif"],
+        secondaryfont: ["'Roboto'", "serif"],
       },
-      fontFamily:{
-        primaryfont : ["'Montserrat'", "serif"],
-        secondaryfont : ["'Roboto'", "serif"]
-      }
+      colors: {
+        ...colors, // Ensure Tailwind's default colors are included
+      },
     },
   },
-  plugins: [],
-}
+  plugins: [addVariablesForColors],
+};
 
+function addVariablesForColors({ addBase, theme }) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(Object.entries(allColors).map(([key, val]) => [`--${key}`, val]));
+
+  addBase({
+    ":root": newVars,
+  });
+}

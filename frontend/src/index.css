@@ -5,8 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* .hero_section{
-    background-image: url(./assets/banner.png);
-    background-repeat: no-repeat;
-    background-position: center;
-} */
+
+body{
+    background-color: black;
+}
